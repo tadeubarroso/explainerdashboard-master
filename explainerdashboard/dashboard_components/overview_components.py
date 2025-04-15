@@ -11,6 +11,8 @@ __all__ = [
     "XGBClassifierExplainer",
     "XGBRegressionExplainer",
 ]
+
+from ..explainers import BaseExplainer
 from math import ceil
 
 import numpy as np
