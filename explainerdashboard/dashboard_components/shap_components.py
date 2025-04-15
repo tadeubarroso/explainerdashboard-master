@@ -30,9 +30,9 @@ class ShapSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Shap Summary",
+        title="Sumário SHAP",
         name=None,
-        subtitle="Ordering features by shap value",
+        subtitle="Ordenação das características por valor SHAP",
         hide_title=False,
         hide_subtitle=False,
         hide_depth=False,
@@ -93,10 +93,10 @@ class ShapSummaryComponent(ExplainerComponent):
         assert self.summary_type in {"aggregate", "detailed"}
         if self.description is None:
             self.description = """
-        The shap summary summarizes the shap values per feature.
-        You can either select an aggregates display that shows mean absolute shap value
-        per feature. Or get a more detailed look at the spread of shap values per
-        feature and how they correlate the the feature value (red is high).
+        O sumário SHAP resume os valores SHAP por característica. 
+        Pode selecionar uma visualização agregada que mostra o valor SHAP absoluto médio por característica, 
+        ou obter uma visão mais detalhada da dispersão dos valores SHAP por característica e de como estes 
+        se correlacionam com o valor da característica (vermelho indica valor alto).
         """
 
         self.popout = GraphPopout(
@@ -147,7 +147,7 @@ class ShapSummaryComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Number of features to display",
+                                                "Número de características a exibir",
                                                 target="shap-summary-depth-label-"
                                                 + self.name,
                                             ),
@@ -176,13 +176,13 @@ class ShapSummaryComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Label(
-                                                        "Summary Type",
+                                                        "Tipo de Sumário",
                                                         id="shap-summary-type-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "Display mean absolute SHAP value per feature (aggregate)"
-                                                        " or display every single shap value per feature (detailed)",
+                                                        "Mostrar valor SHAP absoluto médio por característica (agregado)" 
+                                                        "ou mostrar cada valor SHAP individual por característica (detalhado)",
                                                         target="shap-summary-type-label-"
                                                         + self.name,
                                                     ),
@@ -219,8 +219,8 @@ class ShapSummaryComponent(ExplainerComponent):
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        f"Select {self.explainer.index_name} to highlight in plot. "
-                                                        "You can also select by clicking on a scatter point in the graph.",
+                                                        f"Selecione {self.explainer.index_name} para destacar no gráfico." 
+                                                        "Também pode selecionar clicando num ponto no gráfico.",
                                                         target="shap-summary-index-label-"
                                                         + self.name,
                                                     ),
@@ -362,9 +362,9 @@ class ShapDependenceComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Shap Dependence",
+        title="Dependência SHAP",
         name=None,
-        subtitle="Relationship between feature value and SHAP value",
+        subtitle="Relação entre o valor da característica e o valor SHAP",
         hide_title=False,
         hide_subtitle=False,
         hide_col=False,
@@ -445,12 +445,12 @@ class ShapDependenceComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        This plot shows the relation between feature values and shap values.
-        This allows you to investigate the general relationship between feature
-        value and impact on the prediction. You can check whether the model
-        uses features in line with your intuitions, or use the plots to learn
-        about the relationships that the model has learned between the input features
-        and the predicted outcome.
+        Este gráfico mostra a relação entre os valores das características e os 
+        valores SHAP. Isto permite-lhe investigar a relação geral entre o valor 
+        da característica e o impacto na previsão. Pode verificar se o modelo 
+        utiliza as características de acordo com as suas intuições, ou utilizar 
+        os gráficos para perceber as relações que o modelo aprendeu entre as 
+        características de entrada e o resultado previsto.
         """
         self.popout = GraphPopout(
             "shap-dependence-" + self.name + "popout",
@@ -509,7 +509,7 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Select feature to display shap dependence for",
+                                                "Selecione a característica para exibir a dependência SHAP",
                                                 target="shap-dependence-col-label-"
                                                 + self.name,
                                             ),
@@ -531,13 +531,13 @@ class ShapDependenceComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Color feature:",
+                                                "Característica para cor:",
                                                 id="shap-dependence-color-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Select feature to color the scatter markers by. This "
-                                                "allows you to see interactions between various features in the graph.",
+                                                "Selecione a característica para definir a cor dos marcadores de dispersão."
+                                                "Isto permite-lhe ver interações entre as diversas características no gráfico.",
                                                 target="shap-dependence-color-col-label-"
                                                 + self.name,
                                             ),
@@ -550,7 +550,7 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 ]
                                                 + [
                                                     dict(
-                                                        label="None",
+                                                        label="Nenhum",
                                                         value="no_color_col",
                                                     )
                                                 ],
@@ -571,9 +571,9 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select {self.explainer.index_name} to highlight in the plot."
-                                                "You can also select by clicking on a scatter marker in the accompanying"
-                                                " shap summary plot (detailed).",
+                                                f"Selecione  para destacar no gráfico. " 
+                                                "Também pode selecionar clicando num marcador de dispersão "
+                                                "no gráfico de sumário SHAP correspondente (detalhado).",
                                                 target="shap-dependence-index-label-"
                                                 + self.name,
                                             ),
@@ -620,7 +620,7 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 dbc.Row(
                                                     [
                                                         dbc.Tooltip(
-                                                            "Remove outliers in feature (and color feature) from plot.",
+                                                            "Remover valores atípicos na característica (e na característica de cor) do gráfico.",
                                                             target="shap-dependence-outliers-"
                                                             + self.name,
                                                         ),
@@ -652,12 +652,12 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 html.Div(
                                                     [
                                                         dbc.Label(
-                                                            "Categories:",
+                                                            "Categorias:",
                                                             id="shap-dependence-n-categories-label-"
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            "Maximum number of categories to display",
+                                                            "Número máximo de categorias a exibir",
                                                             target="shap-dependence-n-categories-label-"
                                                             + self.name,
                                                         ),
@@ -689,13 +689,13 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 html.Div(
                                                     [
                                                         html.Label(
-                                                            "Sort categories:",
+                                                            "Ordenar categorias:",
                                                             id="shap-dependence-categories-sort-label-"
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            "How to sort the categories: Alphabetically, most common "
-                                                            "first (Frequency), or highest mean absolute SHAP value first (Shap impact)",
+                                                            "Como ordenar as categorias: Alfabeticamente, mais comuns primeiro (Frequência), "
+                                                            "ou pelo maior valor SHAP absoluto médio primeiro (Impacto SHAP) ",
                                                             target="shap-dependence-categories-sort-label-"
                                                             + self.name,
                                                         ),
@@ -1058,7 +1058,7 @@ class InteractionSummaryComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Label(
-                                                        "Summary Type",
+                                                        " Tipo de Sumário",
                                                         id="interaction-summary-type-label-"
                                                         + self.name,
                                                     ),
@@ -2187,7 +2187,7 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Number of features to display",
+                                                "Número de características a exibir",
                                                 target="contributions-graph-depth-label-"
                                                 + self.name,
                                             ),
@@ -2598,7 +2598,7 @@ class ShapContributionsTableComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Number of features to display",
+                                                "Número de características a exibir",
                                                 target="contributions-table-depth-label-"
                                                 + self.name,
                                             ),
