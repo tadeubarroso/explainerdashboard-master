@@ -25,9 +25,9 @@ class RegressionRandomIndexComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title=None, # Será definido abaixo com base no explainer.index_name
+        title=None,
         name=None,
-        subtitle="Selecione da lista ou escolha aleatoriamente", # Traduzido
+        subtitle="Select from list or pick at random",
         hide_title=False,
         hide_subtitle=False,
         hide_index=False,
@@ -54,11 +54,11 @@ class RegressionRandomIndexComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        f"Selecionar {explainer.index_name} Aleatório". # Atualizado docstring
+                        "Select Random Index".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle Defaults to "Selecione da lista ou escolha aleatoriamente" # Atualizado docstring
+            subtitle (str): subtitle
             hide_title (bool, optional): hide title
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_index (bool, optional): Hide index selector.
@@ -93,14 +93,14 @@ class RegressionRandomIndexComponent(ExplainerComponent):
             description (str, optional): Tooltip to display when hover over
                 component title. When None default text is shown.
         """
-        super().__init__(explainer, title or f"Selecionar {explainer.index_name} Aleatório", name) # Traduzido title default
+        super().__init__(explainer, title or f"Select {explainer.index_name}", name)
         assert self.explainer.is_regression, (
-            # Traduzido
-            "explainer não é um RegressionExplainer, então o RegressionRandomIndexComponent "
-            "não funcionará. Tente usar o ClassifierRandomIndexComponent."
+            "explainer is not a RegressionExplainer so the RegressionRandomIndexComponent "
+            "will not work. Try using the ClassifierRandomIndexComponent instead."
         )
 
-        # self.title já é definido em super().__init__
+        # if self.title is None:
+        #     self.title = f"Select {self.explainer.index_name}"
 
         self.index_name = "random-index-reg-index-" + self.name
         self.index_selector = IndexSelector(
@@ -148,25 +148,21 @@ class RegressionRandomIndexComponent(ExplainerComponent):
             assert (
                 len(self.pred_slider) == 2
                 and self.pred_slider[0] <= self.pred_slider[1]
-                # Traduzido
-            ), "pred_slider deve ser uma lista [limite_inferior, limite_superior]!"
+            ), "pred_slider should be a list of a [lower_bound, upper_bound]!"
 
             assert (
                 len(self.y_slider) == 2 and self.y_slider[0] <= self.y_slider[1]
-                 # Traduzido
-            ), "y_slider deve ser uma lista [limite_inferior, limite_superior]!"
+            ), "y_slider should be a list of a [lower_bound, upper_bound]!"
 
             assert (
                 len(self.residual_slider) == 2
                 and self.residual_slider[0] <= self.residual_slider[1]
-                 # Traduzido
-            ), "residual_slider deve ser uma lista [limite_inferior, limite_superior]!"
+            ), "residual_slider should be a list of a [lower_bound, upper_bound]!"
 
             assert (
                 len(self.abs_residual_slider) == 2
                 and self.abs_residual_slider[0] <= self.abs_residual_slider[1]
-                 # Traduzido
-            ), "abs_residual_slider deve ser uma lista [limite_inferior, limite_superior]!"
+            ), "abs_residual_slider should be a list of a [lower_bound, upper_bound]!"
 
         self.y_slider = [float(y) for y in self.y_slider]
         self.pred_slider = [float(p) for p in self.pred_slider]
@@ -176,21 +172,19 @@ class RegressionRandomIndexComponent(ExplainerComponent):
         assert self.pred_or_y in {
             "preds",
             "y",
-            # Traduzido
-        }, "pred_or_y deve estar em ['preds', 'y']!"
+        }, "pred_or_y should be in ['preds', 'y']!"
 
         if self.description is None:
-             # Traduzido
             self.description = f"""
-        Pode selecionar um {self.explainer.index_name} diretamente, escolhendo-o
-        na lista suspensa (se começar a digitar, pode pesquisar na lista),
-        ou clicar no botão {self.explainer.index_name} Aleatório para selecionar aleatoriamente
-        um {self.explainer.index_name} que se ajuste às restrições. Por exemplo,
-        pode selecionar um {self.explainer.index_name} com um {self.explainer.target} previsto muito alto,
-        ou um {self.explainer.target} observado muito baixo,
-        ou um {self.explainer.index_name} cuja previsão de {self.explainer.target}
-        estava muito longe do {self.explainer.target} observado e, portanto, tinha um
-        resíduo (absoluto) alto.
+        You can select a {self.explainer.index_name} directly by choosing it 
+        from the dropdown (if you start typing you can search inside the list),
+        or hit the Random {self.explainer.index_name} button to randomly select
+        a {self.explainer.index_name} that fits the constraints. For example
+        you can select a {self.explainer.index_name} with a very high predicted
+        {self.explainer.target}, or a very low observed {self.explainer.target},
+        or a {self.explainer.index_name} whose predicted {self.explainer.target} 
+        was very far off from the observed {self.explainer.target} and so had a 
+        high (absolute) residual.
         """
 
     def layout(self):
@@ -202,17 +196,17 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title, # Usa self.title
+                                        self.title,
                                         id="random-index-reg-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
+                                            self.subtitle, className="card-subtitle"
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description, # Usa self.description
+                                        self.description,
                                         target="random-index-reg-title-" + self.name,
                                     ),
                                 ]
@@ -233,15 +227,13 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Button(
-                                                # Traduzido
-                                                f"{self.explainer.index_name} Aleatório",
+                                                f"Random {self.explainer.index_name}",
                                                 color="primary",
                                                 id="random-index-reg-button-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                # Traduzido
-                                                f"Selecione um {self.explainer.index_name} aleatório de acordo com as restrições",
+                                                f"Select a random {self.explainer.index_name} according to the constraints",
                                                 target="random-index-reg-button-"
                                                 + self.name,
                                             ),
@@ -250,8 +242,7 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                     ),
                                     hide=self.hide_button,
                                 ),
-                            ],
-                            class_name="mb-2",
+                            ]
                         ),
                         dbc.Row(
                             [
@@ -261,16 +252,15 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
-                                                        "Intervalo previsto:", # Traduzido
+                                                        "Predicted range:",
                                                         id="random-index-reg-pred-slider-label-"
                                                         + self.name,
                                                         html_for="random-index-reg-pred-slider-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                         # Traduzido
-                                                        f"Selecione apenas {self.explainer.index_name} onde o "
-                                                        f"{self.explainer.target} previsto estava dentro do seguinte intervalo:",
+                                                        f"Only select {self.explainer.index_name} where the "
+                                                        f"predicted {self.explainer.target} was within the following range:",
                                                         target="random-index-reg-pred-slider-label-"
                                                         + self.name,
                                                     ),
@@ -320,16 +310,15 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
-                                                        "Intervalo observado:", # Traduzido
+                                                        "Observed range:",
                                                         id="random-index-reg-y-slider-label-"
                                                         + self.name,
                                                         html_for="random-index-reg-y-slider-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                         # Traduzido
-                                                        f"Selecione apenas {self.explainer.index_name} onde o "
-                                                        f"{self.explainer.target} observado estava dentro do seguinte intervalo:",
+                                                        f"Only select {self.explainer.index_name} where the "
+                                                        f"observed {self.explainer.target} was within the following range:",
                                                         target="random-index-reg-y-slider-label-"
                                                         + self.name,
                                                     ),
@@ -385,7 +374,7 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Intervalo:", # Traduzido
+                                                "Range:",
                                                 id="random-index-reg-preds-or-y-label-"
                                                 + self.name,
                                                 html_for="random-index-reg-preds-or-y-"
@@ -396,20 +385,17 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
-                                                         # Traduzido
-                                                        "label": "Previsto",
+                                                        "label": "Predicted",
                                                         "value": "preds",
                                                     },
-                                                     # Traduzido
-                                                    {"label": "Observado", "value": "y"},
+                                                    {"label": "Observed", "value": "y"},
                                                 ],
                                                 value=self.pred_or_y,
                                             ),
                                             dbc.Tooltip(
-                                                 # Traduzido
-                                                f"Pode selecionar um {self.explainer.index_name} aleatório "
-                                                f"apenas dentro de um certo intervalo do {self.explainer.target} observado ou "
-                                                f"apenas dentro de um certo intervalo do {self.explainer.target} previsto.",
+                                                f"You can either only select a random {self.explainer.index_name}"
+                                                f"from within a certain range of observed {self.explainer.target} or"
+                                                f"from within a certain range of predicted {self.explainer.target}.",
                                                 target="random-index-reg-preds-or-y-label-"
                                                 + self.name,
                                             ),
@@ -428,17 +414,16 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
-                                                        "Intervalo de Resíduos:", # Traduzido
+                                                        "Residuals range:",
                                                         id="random-index-reg-residual-slider-label-"
                                                         + self.name,
                                                         html_for="random-index-reg-residual-slider-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                         # Traduzido
-                                                        f"Selecione apenas {self.explainer.index_name} onde o "
-                                                        f"resíduo (diferença entre {self.explainer.target} observado e {self.explainer.target} previsto)"
-                                                        " estava dentro do seguinte intervalo:",
+                                                        f"Only select {self.explainer.index_name} where the "
+                                                        f"residual (difference between observed {self.explainer.target} and predicted {self.explainer.target})"
+                                                        " was within the following range:",
                                                         target="random-index-reg-residual-slider-label-"
                                                         + self.name,
                                                     ),
@@ -494,17 +479,16 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
-                                                        "Resíduos absolutos", # Traduzido
+                                                        "Absolute residuals",
                                                         id="random-index-reg-abs-residual-slider-label"
                                                         + self.name,
                                                         html_for="random-index-reg-abs-residual-slider-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                         # Traduzido
-                                                        f"Selecione apenas {self.explainer.index_name} onde o resíduo absoluto "
-                                                        f"(diferença entre {self.explainer.target} observado e {self.explainer.target} previsto)"
-                                                        " estava dentro do seguinte intervalo:",
+                                                        f"Only select {self.explainer.index_name} where the absolute "
+                                                        f"residual (difference between observed {self.explainer.target} and predicted {self.explainer.target})"
+                                                        " was within the following range:",
                                                         target="random-index-reg-abs-residual-slider-label"
                                                         + self.name,
                                                     ),
@@ -570,7 +554,7 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Resíduos:", # Traduzido
+                                                "Residuals:",
                                                 id="random-index-reg-abs-residual-label-"
                                                 + self.name,
                                                 html_for="random-index-reg-abs-residual-"
@@ -581,13 +565,11 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
-                                                         # Traduzido
-                                                        "label": "Resíduos",
+                                                        "label": "Residuals",
                                                         "value": "relative",
                                                     },
                                                     {
-                                                         # Traduzido
-                                                        "label": "Resíduos Absolutos",
+                                                        "label": "Absolute Residuals",
                                                         "value": "absolute",
                                                     },
                                                 ],
@@ -596,15 +578,14 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                                                 else "relative",
                                             ),
                                             dbc.Tooltip(
-                                                 # Traduzido
-                                                f"Pode selecionar um {self.explainer.index_name} aleatório apenas "
-                                                f"dentro de um certo intervalo de resíduos "
-                                                f"(diferença entre {self.explainer.target} observado e previsto), "
-                                                f"por exemplo, apenas {self.explainer.index_name} para os quais a previsão "
-                                                f"foi demasiado alta ou demasiado baixa."
-                                                f"Ou pode selecionar apenas de um certo intervalo de resíduos absolutos. Assim, por "
-                                                f"exemplo, selecione apenas {self.explainer.index_name} para os quais a previsão estava "
-                                                f"pelo menos uma certa quantidade de {self.explainer.units} errada.",
+                                                f"You can either only select random a {self.explainer.index_name} "
+                                                f"from within a certain range of residuals "
+                                                f"(difference between observed and predicted {self.explainer.target}), "
+                                                f"so for example only {self.explainer.index_name} for whom the prediction "
+                                                f"was too high or too low."
+                                                f"Or you can select only from a certain absolute residual range. So for "
+                                                f"example only select {self.explainer.index_name} for which the prediction was at "
+                                                f"least a certain amount of {self.explainer.units} off.",
                                                 target="random-index-reg-abs-residual-label-"
                                                 + self.name,
                                             ),
@@ -624,8 +605,7 @@ class RegressionRandomIndexComponent(ExplainerComponent):
         args = self.get_state_args(state_dict)
 
         html = to_html.card(
-            # Traduzido
-            f"Índice selecionado: <b>{self.explainer.get_index(args['index'])}</b>",
+            f"Selected index: <b>{self.explainer.get_index(args['index'])}</b>",
             title=self.title,
         )
         if add_header:
@@ -821,7 +801,6 @@ class RegressionRandomIndexComponent(ExplainerComponent):
                     )
                 else:
                     return self.explainer.random_index(
-                        # Erro no código original? Deveria usar y_range? Mantido como estava.
                         y_min=pred_range[0],
                         y_max=pred_range[1],
                         residuals_min=residual_range[0],
@@ -834,16 +813,11 @@ class RegressionModelSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Resumo do Modelo", # Traduzido
+        title="Model Summary",
         name=None,
-        subtitle="Métricas quantitativas para o desempenho do modelo", # Traduzido
+        subtitle="Quantitative metrics for model performance",
         hide_title=False,
         hide_subtitle=False,
-        hide_footer=False,
-        hide_cutoff=False,
-        hide_selector=False,
-        pos_label=None,
-        cutoff=0.5,
         round=3,
         show_metrics=None,
         description=None,
@@ -855,42 +829,38 @@ class RegressionModelSummaryComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Resumo do Modelo". # Atualizado docstring
+                        "Model Summary".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle. Defaults to "Métricas quantitativas para o desempenho do modelo" # Atualizado docstring
+            subtitle (str): subtitle
             hide_title (bool, optional): hide title
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
-            hide_footer (bool, optional): hide the footer at the bottom of the component
-            hide_cutoff (bool, optional): hide cutoff slider. Defaults to False.
-            hide_selector(bool, optional): hide pos label selector. Defaults to False.
-            pos_label ({int, str}, optional): initial pos label. Defaults to explainer.pos_label
-            cutoff (float, optional): default cutoff. Defaults to 0.5.
-            round (int): round floats. Defaults to 3.
+            round (int): rounding to perform to metric floats.
             show_metrics (List): list of metrics to display in order. Defaults
                 to None, displaying all metrics.
             description (str, optional): Tooltip to display when hover over
                 component title. When None default text is shown.
         """
         super().__init__(explainer, title, name)
-
-        self.cutoff_name = "clas-model-summary-cutoff-" + self.name
-
-        self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
         if self.description is None:
-             # Traduzido
             self.description = f"""
-        Na tabela abaixo pode encontrar uma série de métricas de desempenho de regressão
-        que descrevem quão bem o modelo consegue prever
+        In the table below you can find a number of regression performance 
+        metrics that describe how well the model is able to predict 
         {self.explainer.target}.
         """
         self.register_dependencies(["preds", "residuals"])
 
     def layout(self):
-        metrics_dict = self.explainer.metrics_descriptions(round=self.round) # Passa round para descrições
-         # O DataFrame já foi traduzido em explainer_methods.py
-        metrics_df = self._get_metrics_df()
+        metrics_dict = self.explainer.metrics_descriptions()
+        metrics_df = (
+            pd.DataFrame(
+                self.explainer.metrics(show_metrics=self.show_metrics), index=["Score"]
+            )
+            .T.rename_axis(index="metric")
+            .reset_index()
+            .round(self.round)
+        )
         metrics_table = dbc.Table.from_dataframe(
             metrics_df, striped=False, bordered=False, hover=False
         )
@@ -905,17 +875,17 @@ class RegressionModelSummaryComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title, # Usa self.title
+                                        self.title,
                                         id="reg-model-summary-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
+                                            self.subtitle, className="card-subtitle"
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description, # Usa self.description
+                                        self.description,
                                         target="reg-model-summary-title-" + self.name,
                                     ),
                                 ]
@@ -930,28 +900,19 @@ class RegressionModelSummaryComponent(ExplainerComponent):
 
     def to_html(self, state_dict=None, add_header=True):
         args = self.get_state_args(state_dict)
-         # O DataFrame já foi traduzido em explainer_methods.py
-        metrics_df = self._get_metrics_df()
+        metrics_df = (
+            pd.DataFrame(
+                self.explainer.metrics(show_metrics=self.show_metrics), index=["Score"]
+            )
+            .T.rename_axis(index="metric")
+            .reset_index()
+            .round(self.round)
+        )
         html = to_html.table_from_df(metrics_df)
         html = to_html.card(html, title=self.title)
         if add_header:
             return to_html.add_header(html)
         return html
-
-    def _get_metrics_df(self):
-        metrics_dict = self.explainer.metrics(show_metrics=self.show_metrics)
-        metrics_df = (
-            pd.DataFrame(
-                metrics_dict,
-                index=["Pontuação"], # Traduzido "Score"
-            )
-            .T.rename_axis(index="Métrica") # Traduzido "metric"
-            .reset_index()
-            .round(self.round)
-        )
-        return metrics_df
-
-    # Não há callbacks específicos para este componente
 
 
 class RegressionPredictionSummaryComponent(ExplainerComponent):
@@ -960,7 +921,7 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Previsão", # Traduzido
+        title="Prediction",
         name=None,
         hide_index=False,
         hide_title=False,
@@ -979,7 +940,7 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Previsão". # Atualizado docstring
+                        "Prediction".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -1008,10 +969,9 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
             self.hide_index = True
 
         if self.description is None:
-            # Traduzido
             self.description = f"""
-        Mostra o {self.explainer.target} previsto e o {self.explainer.target} observado,
-        bem como a diferença entre os dois (resíduo).
+        Shows the predicted {self.explainer.target} and the observed {self.explainer.target},
+        as well as the difference between the two (residual)
         """
 
     def layout(self):
@@ -1021,12 +981,12 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
                     dbc.CardHeader(
                         [
                             html.H3(
-                                self.title, # Usa self.title
+                                self.title,
                                 id="reg-prediction-title-" + self.name,
                                 className="card-title",
                             ),
                             dbc.Tooltip(
-                                self.description, # Usa self.description
+                                self.description,
                                 target="reg-prediction-title-" + self.name,
                             ),
                         ]
@@ -1040,7 +1000,6 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
-                                             # Usa index_name já traduzido
                                             dbc.Label(f"{self.explainer.index_name}:"),
                                             self.index_selector.layout(),
                                         ],
@@ -1068,14 +1027,12 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
         args = self.get_state_args(state_dict)
         if self.feature_input_component is None:
             if args["index"] is not None:
-                 # DataFrame traduzido em explainer_methods.py
                 preds_df = self.explainer.prediction_result_df(
                     args["index"], round=self.round
                 )
                 html = to_html.table_from_df(preds_df)
             else:
-                 # Traduzido
-                html = "nenhum índice selecionado"
+                html = "no index selected"
         else:
             inputs = {
                 k: v
@@ -1089,14 +1046,12 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
                 self.feature_input_component._input_features
             ) and not any([i is None for i in inputs]):
                 X_row = self.explainer.get_row_from_input(inputs, ranked_by_shap=True)
-                # DataFrame traduzido em explainer_methods.py
                 preds_df = self.explainer.prediction_result_df(
                     X_row=X_row, round=self.round
                 )
                 html = to_html.table_from_df(preds_df)
             else:
-                # Traduzido
-                html = f"<div>dados de entrada incorretos</div>"
+                html = f"<div>input data incorrect</div>"
 
         html = to_html.card(html, title=self.title)
         if add_header:
@@ -1113,7 +1068,6 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
             def update_output_div(index):
                 if index is None or not self.explainer.index_exists(index):
                     raise PreventUpdate
-                # DataFrame traduzido em explainer_methods.py
                 preds_df = self.explainer.prediction_result_df(index, round=self.round)
                 return make_hideable(
                     dbc.Table.from_dataframe(
@@ -1130,7 +1084,6 @@ class RegressionPredictionSummaryComponent(ExplainerComponent):
             )
             def update_output_div(*inputs):
                 X_row = self.explainer.get_row_from_input(inputs, ranked_by_shap=True)
-                # DataFrame traduzido em explainer_methods.py
                 preds_df = self.explainer.prediction_result_df(
                     X_row=X_row, round=self.round
                 )
@@ -1150,9 +1103,9 @@ class PredictedVsActualComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Previsto vs Real", # Traduzido
+        title="Predicted vs Actual",
         name=None,
-        subtitle="Quão próximo está o valor previsto do observado?", # Traduzido
+        subtitle="How close is the predicted value to the observed?",
         hide_title=False,
         hide_subtitle=False,
         hide_log_x=False,
@@ -1172,11 +1125,11 @@ class PredictedVsActualComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Previsto vs Real". # Atualizado docstring
+                        "Predicted vs Actual".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle. Defaults to "Quão próximo está o valor previsto do observado?". # Atualizado docstring
+            subtitle (str): subtitle
             hide_title (bool, optional) Hide the title. Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_log_x (bool, optional): Hide the log_x toggle. Defaults to False.
@@ -1197,13 +1150,12 @@ class PredictedVsActualComponent(ExplainerComponent):
         self.logs, self.log_x, self.log_y = logs, log_x, log_y
 
         if self.description is None:
-            # Traduzido
             self.description = f"""
-        O gráfico mostra o {self.explainer.target} observado e o {self.explainer.target} previsto
-        no mesmo gráfico. Um modelo perfeito teria
-        todos os pontos na diagonal (previsto igual a observado). Quanto mais
-        afastados os pontos estiverem da diagonal, pior o modelo é na previsão
-        de {self.explainer.target}.
+        Plot shows the observed {self.explainer.target} and the predicted 
+        {self.explainer.target} in the same plot. A perfect model would have
+        all the points on the diagonal (predicted matches observed). The further
+        away point are from the diagonal the worse the model is in predicting
+        {self.explainer.target}.
         """
 
         self.popout = GraphPopout(
@@ -1223,17 +1175,17 @@ class PredictedVsActualComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title, # Usa self.title
+                                        self.title,
                                         id="pred-vs-actual-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
+                                            self.subtitle, className="card-subtitle"
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description, # Usa self.description
+                                        self.description,
                                         target="pred-vs-actual-title-" + self.name,
                                     ),
                                 ]
@@ -1259,14 +1211,13 @@ class PredictedVsActualComponent(ExplainerComponent):
                                                         value=self.log_y,
                                                     ),
                                                     dbc.Tooltip(
-                                                         # Traduzido
-                                                        "Ao usar um eixo logarítmico, é mais fácil ver erros "
-                                                        "relativos em vez de erros absolutos.",
+                                                        "By using a log axis, it is easier to see relative "
+                                                        "errors instead of absolute errors.",
                                                         target="pred-vs-actual-logy-"
                                                         + self.name,
                                                     ),
                                                     dbc.Label(
-                                                        "Log y", # Traduzido
+                                                        "Log y",
                                                         html_for="pred-vs-actual-logy-"
                                                         + self.name,
                                                         className="form-check-label",
@@ -1308,14 +1259,13 @@ class PredictedVsActualComponent(ExplainerComponent):
                                                         value=self.log_x,
                                                     ),
                                                     dbc.Tooltip(
-                                                        # Traduzido
-                                                        "Ao usar um eixo logarítmico, é mais fácil ver erros "
-                                                        "relativos em vez de erros absolutos.",
+                                                        "By using a log axis, it is easier to see relative "
+                                                        "errors instead of absolute errors.",
                                                         target="pred-vs-actual-logx-"
                                                         + self.name,
                                                     ),
                                                     dbc.Label(
-                                                        "Log x", # Traduzido
+                                                        "Log x",
                                                         html_for="pred-vs-actual-logx-"
                                                         + self.name,
                                                         className="form-check-label",
@@ -1383,9 +1333,9 @@ class ResidualsComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Resíduos", # Traduzido
+        title="Residuals",
         name=None,
-        subtitle="Qual é o erro do modelo?", # Traduzido
+        subtitle="How much is the model off?",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -1405,11 +1355,11 @@ class ResidualsComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Resíduos". # Atualizado docstring
+                        "Residuals".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle. Defaults to "Qual é o erro do modelo?". # Atualizado docstring
+            subtitle (str): subtitle
             hide_title (bool, optional) Hide the title. Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_footer (bool, optional): hide the footer at the bottom of the component
@@ -1432,18 +1382,17 @@ class ResidualsComponent(ExplainerComponent):
         super().__init__(explainer, title, name)
 
         assert residuals in ["difference", "ratio", "log-ratio"], (
-             # Traduzido
-            "o parâmetro residuals deve estar em ['difference', 'ratio', 'log-ratio']"
-            f" mas você passou residuals={residuals}"
+            "parameter residuals should in ['difference', 'ratio', 'log-ratio']"
+            f" but you passed residuals={residuals}"
         )
 
         if self.description is None:
-             # Traduzido
             self.description = f"""
-        Os resíduos são a diferença entre o {self.explainer.target} observado
-        e o {self.explainer.target} previsto. Neste gráfico, pode verificar se
-        os resíduos são maiores ou menores para resultados reais/previstos mais altos/baixos.
-        Assim, pode verificar se o modelo funciona melhor ou pior para diferentes níveis de {self.explainer.target}.
+        The residuals are the difference between the observed {self.explainer.target}
+        and predicted {self.explainer.target}. In this plot you can check if 
+        the residuals are higher or lower for higher/lower actual/predicted outcomes. 
+        So you can check if the model works better or worse for different {self.explainer.target}
+        levels.
         """
 
         self.popout = GraphPopout(
@@ -1462,15 +1411,17 @@ class ResidualsComponent(ExplainerComponent):
                         [
                             html.Div(
                                 [
-                                    html.H3(self.title, id="residuals-title-" + self.name), # Usa self.title
+                                    html.H3(
+                                        self.title, id="residuals-title-" + self.name
+                                    ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
+                                            self.subtitle, className="card-subtitle"
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description, # Usa self.description
+                                        self.description,
                                         target="residuals-title-" + self.name,
                                     ),
                                 ]
@@ -1520,20 +1471,18 @@ class ResidualsComponent(ExplainerComponent):
                                                 dbc.Row(
                                                     [
                                                         dbc.Label(
-                                                            "Eixo horizontal:", # Traduzido
+                                                            "Horizontal axis:",
                                                             html_for="residuals-pred-or-actual-"
                                                             + self.name,
                                                         ),
                                                         dbc.Select(
                                                             options=[
                                                                 {
-                                                                    # Traduzido
-                                                                    "label": "Previsto",
+                                                                    "label": "Predicted",
                                                                     "value": "vs_pred",
                                                                 },
                                                                 {
-                                                                    # Traduzido
-                                                                    "label": "Observado",
+                                                                    "label": "Observed",
                                                                     "value": "vs_actual",
                                                                 },
                                                             ],
@@ -1547,9 +1496,8 @@ class ResidualsComponent(ExplainerComponent):
                                                     + self.name,
                                                 ),
                                                 dbc.Tooltip(
-                                                     # Traduzido
-                                                    "Selecione o que gostaria de colocar no eixo x:"
-                                                    f" {self.explainer.target} observado ou {self.explainer.target} previsto.",
+                                                    "Select what you would like to put on the x-axis:"
+                                                    f" observed {self.explainer.target} or predicted {self.explainer.target}.",
                                                     target="residuals-pred-or-actual-form-"
                                                     + self.name,
                                                 ),
@@ -1564,16 +1512,15 @@ class ResidualsComponent(ExplainerComponent):
                                                 dbc.Row(
                                                     [
                                                         dbc.Label(
-                                                            "Tipo de resíduo:", # Traduzido
+                                                            "Residual type:",
                                                             id="residuals-type-label-"
                                                             + self.name,
                                                             html_for="residuals-type-"
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            # Traduzido
-                                                            "Tipo de resíduos a exibir: y-preds (diferença), "
-                                                            "y/preds (razão) ou log(y/preds) (log-razão).",
+                                                            "Type of residuals to display: y-preds (difference), "
+                                                            "y/preds (ratio) or log(y/preds) (logratio).",
                                                             target="residuals-type-label-"
                                                             + self.name,
                                                         ),
@@ -1582,18 +1529,15 @@ class ResidualsComponent(ExplainerComponent):
                                                             + self.name,
                                                             options=[
                                                                 {
-                                                                     # Traduzido
-                                                                    "label": "Diferença",
+                                                                    "label": "Difference",
                                                                     "value": "difference",
                                                                 },
                                                                 {
-                                                                     # Traduzido
-                                                                    "label": "Razão",
+                                                                    "label": "Ratio",
                                                                     "value": "ratio",
                                                                 },
                                                                 {
-                                                                     # Traduzido
-                                                                    "label": "Log da razão",
+                                                                    "label": "Log ratio",
                                                                     "value": "log-ratio",
                                                                 },
                                                             ],
@@ -1663,9 +1607,9 @@ class RegressionVsColComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Gráfico vs Característica", # Traduzido
+        title="Plot vs feature",
         name=None,
-        subtitle="As previsões e resíduos estão correlacionados com as características?", # Traduzido
+        subtitle="Are predictions and residuals correlated with features?",
         hide_title=False,
         hide_subtitle=False,
         hide_footer=False,
@@ -1693,11 +1637,11 @@ class RegressionVsColComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Gráfico vs Característica". # Atualizado docstring
+                        "Plot vs feature".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle Defaults to "As previsões e resíduos estão correlacionados com as características?". # Atualizado docstring
+            subtitle (str): subtitle
             hide_title (bool, optional) Hide the title. Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_footer (bool, optional): hide the footer at the bottom of the component
@@ -1737,20 +1681,18 @@ class RegressionVsColComponent(ExplainerComponent):
             "difference",
             "ratio",
             "log-ratio",
-             # Traduzido
         }, (
-            "o parâmetro display deve estar em {'observed', 'predicted', 'difference', 'ratio', 'log-ratio'}"
-            f" mas você passou display={self.display}!"
+            "parameter display should in {'observed', 'predicted', 'difference', 'ratio', 'log-ratio'}"
+            f" but you passed display={self.display}!"
         )
 
         if self.description is None:
-             # Traduzido
             self.description = f"""
-        Este gráfico mostra ou os resíduos (diferença entre {self.explainer.target} observado
-        e {self.explainer.target} previsto) representados contra os valores de diferentes características,
-        ou o {self.explainer.target} observado ou previsto.
-        Isto permite inspecionar se o modelo está mais errado para um intervalo
-        particular de valores de características do que outros.
+        This plot shows either residuals (difference between observed {self.explainer.target}
+        and predicted {self.explainer.target}) plotted against the values of different features,
+        or the observed or predicted {self.explainer.target}.
+        This allows you to inspect whether the model is more wrong for particular
+        range of feature values than others. 
         """
         self.popout = GraphPopout(
             "reg-vs-col-" + self.name + "popout",
@@ -1769,16 +1711,16 @@ class RegressionVsColComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title, id="reg-vs-col-title-" + self.name # Usa self.title
+                                        self.title, id="reg-vs-col-title-" + self.name
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
+                                            self.subtitle, className="card-subtitle"
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description, # Usa self.description
+                                        self.description,
                                         target="reg-vs-col-title-" + self.name,
                                     ),
                                 ]
@@ -1795,12 +1737,11 @@ class RegressionVsColComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Característica:", # Traduzido
+                                                "Feature:",
                                                 id="reg-vs-col-col-label-" + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                # Traduzido
-                                                "Selecione a característica a exibir no eixo x.",
+                                                "Select the feature to display on the x-axis.",
                                                 target="reg-vs-col-col-label-"
                                                 + self.name,
                                             ),
@@ -1821,17 +1762,16 @@ class RegressionVsColComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Exibir:", # Traduzido
+                                                "Display:",
                                                 id="reg-vs-col-display-type-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                # Traduzido
-                                                f"Selecione o que exibir no eixo y: {self.explainer.target} observado, "
-                                                f"{self.explainer.target} previsto ou resíduos. Os resíduos podem ser "
-                                                "calculados pela diferença (y-preds), "
-                                                "razão (y/preds) ou log da razão log(y/preds). Este último torna mais fácil "
-                                                "ver diferenças relativas.",
+                                                f"Select what to display on the y axis: observed {self.explainer.target}, "
+                                                f"predicted {self.explainer.target} or residuals. Residuals can either "
+                                                "be calculated by takind the difference (y-preds), "
+                                                "ratio (y/preds) or log ratio log(y/preds). The latter makes it easier to "
+                                                "see relative differences.",
                                                 target="reg-vs-col-display-type-label-"
                                                 + self.name,
                                             ),
@@ -1840,28 +1780,23 @@ class RegressionVsColComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
-                                                        # Traduzido
-                                                        "label": "Observado",
+                                                        "label": "Observed",
                                                         "value": "observed",
                                                     },
                                                     {
-                                                         # Traduzido
-                                                        "label": "Previsto",
+                                                        "label": "Predicted",
                                                         "value": "predicted",
                                                     },
                                                     {
-                                                         # Traduzido
-                                                        "label": "Resíduos: Diferença",
+                                                        "label": "Residuals: Difference",
                                                         "value": "difference",
                                                     },
                                                     {
-                                                         # Traduzido
-                                                        "label": "Resíduos: Razão",
+                                                        "label": "Residuals: Ratio",
                                                         "value": "ratio",
                                                     },
                                                     {
-                                                         # Traduzido
-                                                        "label": "Resíduos: Log da razão",
+                                                        "label": "Residuals: Log ratio",
                                                         "value": "log-ratio",
                                                     },
                                                 ],
@@ -1911,15 +1846,14 @@ class RegressionVsColComponent(ExplainerComponent):
                                         dbc.Col(
                                             [
                                                 dbc.Label(
-                                                    "Winsor:", # Traduzido (manter Winsor?)
+                                                    "Winsor:",
                                                     id="reg-vs-col-winsor-label-"
                                                     + self.name,
                                                 ),
                                                 dbc.Tooltip(
-                                                    # Traduzido
-                                                    "Exclui os valores y mais altos e mais baixos do gráfico. "
-                                                    "Quando tem alguns outliers reais, pode ajudar a removê-los"
-                                                    " do gráfico para que seja mais fácil ver o padrão geral.",
+                                                    "Excluded the highest and lowest y values from the plot. "
+                                                    "When you have some real outliers it can help to remove them"
+                                                    " from the plot so it is easier to see the overall pattern.",
                                                     target="reg-vs-col-winsor-label-"
                                                     + self.name,
                                                 ),
@@ -1943,19 +1877,17 @@ class RegressionVsColComponent(ExplainerComponent):
                                                     [
                                                         dbc.Row(
                                                             [
-                                                                dbc.Label("Dispersão:"), # Traduzido
+                                                                dbc.Label("Scatter:"),
                                                                 dbc.Tooltip(
-                                                                    # Traduzido
-                                                                    "Para características categóricas, exibir "
-                                                                    "uma nuvem de pontos ao lado dos gráficos de violino.",
+                                                                    "For categorical features, display "
+                                                                    "a point cloud next to the violin plots.",
                                                                     target="reg-vs-col-show-points-"
                                                                     + self.name,
                                                                 ),
                                                                 dbc.Checklist(
                                                                     options=[
                                                                         {
-                                                                             # Traduzido
-                                                                            "label": "Mostrar nuvem de pontos",
+                                                                            "label": "Show point cloud",
                                                                             "value": True,
                                                                         }
                                                                     ],
@@ -1984,13 +1916,12 @@ class RegressionVsColComponent(ExplainerComponent):
                                                 html.Div(
                                                     [
                                                         dbc.Label(
-                                                            "Categorias:", # Traduzido
+                                                            "Categories:",
                                                             id="reg-vs-col-n-categories-label-"
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                             # Traduzido
-                                                            "Número máximo de categorias a exibir",
+                                                            "Maximum number of categories to display",
                                                             target="reg-vs-col-n-categories-label-"
                                                             + self.name,
                                                         ),
@@ -2018,14 +1949,13 @@ class RegressionVsColComponent(ExplainerComponent):
                                                 html.Div(
                                                     [
                                                         html.Label(
-                                                            "Ordenar categorias:", # Traduzido
+                                                            "Sort categories:",
                                                             id="reg-vs-col-categories-sort-label-"
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            # Traduzido
-                                                            "Como ordenar as categorias: Alfabeticamente, mais comuns "
-                                                            "primeiro (Frequência), ou maior valor SHAP absoluto médio primeiro (Impacto Shap)",
+                                                            "How to sort the categories: Alphabetically, most common "
+                                                            "first (Frequency), or highest mean absolute SHAP value first (Shap impact)",
                                                             target="reg-vs-col-categories-sort-label-"
                                                             + self.name,
                                                         ),
@@ -2034,18 +1964,15 @@ class RegressionVsColComponent(ExplainerComponent):
                                                             + self.name,
                                                             options=[
                                                                 {
-                                                                     # Traduzido
-                                                                    "label": "Alfabeticamente",
+                                                                    "label": "Alphabetically",
                                                                     "value": "alphabet",
                                                                 },
                                                                 {
-                                                                     # Traduzido
-                                                                    "label": "Frequência",
+                                                                    "label": "Frequency",
                                                                     "value": "freq",
                                                                 },
                                                                 {
-                                                                     # Traduzido
-                                                                    "label": "Impacto Shap",
+                                                                    "label": "Shap impact",
                                                                     "value": "shap",
                                                                 },
                                                             ],
@@ -2184,4 +2111,3 @@ class RegressionVsColComponent(ExplainerComponent):
                     style,
                     style,
                 )
-            
