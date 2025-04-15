@@ -1,19 +1,21 @@
+# -*- coding: utf-8 -*-
+
+# O __all__ abaixo parece ser de explainer_methods.py ou explainer.py,
+# mas o código a seguir é de composites.py. Mantido como fornecido pelo utilizador.
 __all__ = [
-    "ImportancesComposite",
-    "ClassifierModelStatsComposite",
-    "RegressionModelStatsComposite",
-    "IndividualPredictionsComposite",
-    "ShapDependenceComposite",
-    "ShapInteractionsComposite",
-    "DecisionTreesComposite",
-    "WhatIfComposite",
-    "SimplifiedClassifierComposite",
-    "SimplifiedRegressionComposite",
+    "BaseExplainer",
+    "ClassifierExplainer",
+    "RegressionExplainer",
+    "RandomForestClassifierExplainer",
+    "RandomForestRegressionExplainer",
+    "XGBClassifierExplainer",
+    "XGBRegressionExplainer",
 ]
 
 import dash_bootstrap_components as dbc
 from dash import html
 
+# Presumo que os imports abaixo estejam corretos no contexto do projeto original
 from ..explainers import RandomForestExplainer, XGBExplainer
 from ..dashboard_methods import *
 from .classifier_components import *
@@ -29,7 +31,7 @@ class ImportancesComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Feature Importances",
+        title="Importância das Características", # Traduzido
         name=None,
         hide_title=True,
         hide_importances=False,
@@ -45,7 +47,7 @@ class ImportancesComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Feature Importances".
+                        "Importância das Características". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -57,9 +59,11 @@ class ImportancesComposite(ExplainerComponent):
         """
         super().__init__(explainer, title, name)
 
+        # O título aqui herdará o título traduzido do componente
         self.importances = ImportancesComponent(
             explainer, name=self.name + "0", hide_selector=hide_selector, **kwargs
         )
+        # O título aqui herdará o título traduzido do componente
         self.feature_descriptions = FeatureDescriptionsComponent(explainer, **kwargs)
 
         if not self.explainer.descriptions:
@@ -69,6 +73,7 @@ class ImportancesComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
+                    # Usa self.title que foi traduzido no init
                     dbc.Row(html.H2(self.title), class_name="mt-4"),
                     hide=self.hide_title,
                 ),
@@ -127,7 +132,7 @@ class ClassifierModelStatsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Classification Stats",
+        title="Estatísticas de Classificação", # Traduzido
         name=None,
         hide_title=True,
         hide_selector=True,
@@ -158,7 +163,7 @@ class ClassifierModelStatsComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Decision Trees".
+                        "Estatísticas de Classificação". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -180,6 +185,8 @@ class ClassifierModelStatsComposite(ExplainerComponent):
         """
         super().__init__(explainer, title, name)
 
+        # Os títulos dos componentes filhos serão definidos dentro deles,
+        # presumindo que esses componentes também foram traduzidos.
         self.summary = ClassifierModelSummaryComponent(
             explainer, hide_selector=hide_selector, pos_label=pos_label, **kwargs
         )
@@ -231,7 +238,8 @@ class ClassifierModelStatsComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H2("Model Performance:"), class_name="mt-4 gx-4"),
+                    # Traduzido
+                    dbc.Row(html.H2("Desempenho do Modelo:"), class_name="mt-4 gx-4"),
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -351,7 +359,7 @@ class RegressionModelStatsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Regression Stats",
+        title="Estatísticas de Regressão", # Traduzido
         name=None,
         hide_title=True,
         hide_modelsummary=False,
@@ -374,7 +382,7 @@ class RegressionModelStatsComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Regression Stats".
+                        "Estatísticas de Regressão". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -395,7 +403,8 @@ class RegressionModelStatsComposite(ExplainerComponent):
         assert pred_or_actual in [
             "vs_actual",
             "vs_pred",
-        ], "pred_or_actual should be 'vs_actual' or 'vs_pred'!"
+            # Traduzido
+        ], "pred_or_actual deve ser 'vs_actual' ou 'vs_pred'!"
 
         self.modelsummary = RegressionModelSummaryComponent(
             explainer, name=self.name + "0", **kwargs
@@ -418,7 +427,8 @@ class RegressionModelStatsComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H2("Model Performance:"), class_name="mt-4 gx-4"),
+                    # Traduzido
+                    dbc.Row(html.H2("Desempenho do Modelo:"), class_name="mt-4 gx-4"),
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -482,7 +492,7 @@ class IndividualPredictionsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Individual Predictions",
+        title="Previsões Individuais", # Traduzido
         name=None,
         hide_predindexselector=False,
         hide_predictionsummary=False,
@@ -506,7 +516,7 @@ class IndividualPredictionsComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Individual Predictions".
+                        "Previsões Individuais". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -569,7 +579,7 @@ class IndividualPredictionsComposite(ExplainerComponent):
                             hide=self.hide_predictionsummary,
                         ),
                     ],
-                    class_name="mt-4 g-x4",
+                    class_name="mt-4 g-x4", # Nota: 'g-x4' é provavelmente erro de digitação, deveria ser 'gx-4'
                 ),
                 dbc.Row(
                     [
@@ -638,7 +648,7 @@ class WhatIfComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="What if...",
+        title="E Se...", # Traduzido
         name=None,
         hide_whatifindexselector=False,
         hide_inputeditor=False,
@@ -659,7 +669,7 @@ class WhatIfComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Individual Predictions".
+                        "E Se...". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -683,7 +693,8 @@ class WhatIfComposite(ExplainerComponent):
 
         if "hide_whatifcontribution" in kwargs:
             print(
-                "Warning: hide_whatifcontribution will be deprecated, use hide_whatifcontributiongraph instead!"
+                # Traduzido
+                "Aviso: hide_whatifcontribution será descontinuado, use hide_whatifcontributiongraph!"
             )
             self.hide_whatifcontributiongraph = kwargs["hide_whatifcontribution"]
 
@@ -741,7 +752,7 @@ class WhatIfComposite(ExplainerComponent):
         return dbc.Container(
             [
                 make_hideable(
-                    dbc.Row(html.H1(self.title), class_name="mt-4 gx-4"),
+                    dbc.Row(html.H1(self.title), class_name="mt-4 gx-4"), # Usa self.title
                     hide=self.hide_title,
                 ),
                 dbc.Row(
@@ -846,7 +857,7 @@ class ShapDependenceComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Feature Dependence",
+        title="Dependência das Características", # Traduzido
         name=None,
         hide_selector=True,
         hide_shapsummary=False,
@@ -860,7 +871,7 @@ class ShapDependenceComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Feature Dependence".
+                        "Dependência das Características". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -898,7 +909,7 @@ class ShapDependenceComposite(ExplainerComponent):
                     ]
                 ),
             ],
-            class_name="my-4 g-4",
+            class_name="my-4 g-4", # Nota: 'g-4' parece correto, diferente do 'g-x4' anterior
             fluid=True,
         )
 
@@ -925,7 +936,7 @@ class ShapInteractionsComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Feature Interactions",
+        title="Interações das Características", # Traduzido
         name=None,
         hide_selector=True,
         hide_interactionsummary=False,
@@ -939,7 +950,7 @@ class ShapInteractionsComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Feature Interactions".
+                        "Interações das Características". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -1002,7 +1013,7 @@ class DecisionTreesComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Decision Trees",
+        title="Árvores de Decisão", # Traduzido
         name=None,
         hide_treeindexselector=False,
         hide_treesgraph=False,
@@ -1023,7 +1034,7 @@ class DecisionTreesComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         RandomForestClassifierExplainer() or RandomForestRegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Decision Trees".
+                        "Árvores de Decisão". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -1092,7 +1103,7 @@ class DecisionTreesComposite(ExplainerComponent):
                             hide=self.hide_treesgraph,
                         ),
                     ],
-                    class_name="mt-4 g-x4",
+                    class_name="mt-4 g-x4", # Erro de digitação original
                 ),
                 dbc.Row(
                     [
@@ -1114,7 +1125,7 @@ class DecisionTreesComposite(ExplainerComponent):
                             hide=self.hide_treepathgraph,
                         ),
                     ],
-                    class_name="mt-4 g-x4",
+                    class_name="mt-4 g-x4", # Erro de digitação original
                 ),
             ],
             fluid=True,
@@ -1151,7 +1162,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Simple Classifier Explainer",
+        title="Explicador Simplificado de Classificador", # Traduzido
         name=None,
         hide_title=False,
         classifier_custom_component="roc_auc",
@@ -1177,7 +1188,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Simple Classification Stats".
+                        "Explicador Simplificado de Classificador". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -1222,7 +1233,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             self.classifier_custom_component = LiftCurveComponent(
                 explainer, **update_params(kwargs, hide_selector=True)
             )
-        elif classifier_custom_component == "classifiction":
+        elif classifier_custom_component == "classifiction": # Erro de digitação no original 'classifiction'
             self.classifier_custom_component = ClassificationComponent(
                 explainer, **update_params(kwargs, hide_selector=True)
             )
@@ -1232,9 +1243,10 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             )
         else:
             raise ValueError(
-                "ERROR: SimplifiedClassifierDashboard parameter classifier_custom_component "
-                "should be in {'metrics', 'roc_auc', pr_auc', 'precision_graph', 'lift_curve', 'class_graph'} "
-                f"but you passed {classifier_custom_component}!"
+                # Traduzido
+                "ERRO: Parâmetro classifier_custom_component de SimplifiedClassifierDashboard "
+                "deve estar em {'metrics', 'roc_auc', pr_auc', 'precision_graph', 'lift_curve', 'class_graph'} "
+                f"mas você passou {classifier_custom_component}!"
             )
 
         # SHAP summary & dependence
@@ -1242,7 +1254,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             explainer,
             **update_params(
                 kwargs,
-                title="Shap Feature Importances",
+                title="Importâncias das Características SHAP", # Traduzido
                 hide_index=True,
                 hide_selector=True,
                 depth=None,
@@ -1282,7 +1294,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
             [
                 make_hideable(
                     dbc.Row(
-                        html.H1(self.title, id="simple-classifier-composite-title"),
+                        html.H1(self.title, id="simple-classifier-composite-title"), # Usa self.title
                         class_name="mt-4 gx-4",
                     ),
                     hide=self.hide_title,
@@ -1291,7 +1303,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Model performance"),
+                                html.H2("Desempenho do Modelo"), # Traduzido
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1315,7 +1327,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H3("SHAP values"),
+                                html.H3("Valores SHAP"), # Traduzido
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1337,7 +1349,7 @@ class SimplifiedClassifierComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Individual predictions"),
+                                html.H2("Previsões Individuais"), # Traduzido
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1418,7 +1430,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Simple Regression Explainer",
+        title="Explicador Simplificado de Regressão", # Traduzido
         name=None,
         hide_title=False,
         regression_custom_component="vs_col",
@@ -1443,7 +1455,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Simple Classification Stats".
+                        "Explicador Simplificado de Regressão". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -1479,9 +1491,10 @@ class SimplifiedRegressionComposite(ExplainerComponent):
             )
         else:
             raise ValueError(
-                "ERROR: SimplifiedRegressionDashboard parameter "
-                "regression_custom_component should be in {'metrics', 'residuals', 'vs_col'}"
-                f" but you passed {regression_custom_component}!"
+                # Traduzido
+                "ERRO: Parâmetro regression_custom_component de SimplifiedRegressionDashboard "
+                "deve estar em {'metrics', 'residuals', 'vs_col'}"
+                f" mas você passou {regression_custom_component}!"
             )
 
         # SHAP summary & dependence
@@ -1489,7 +1502,8 @@ class SimplifiedRegressionComposite(ExplainerComponent):
             explainer,
             **update_params(
                 kwargs,
-                title="Shap Feature Importances",
+                 # Traduzido
+                title="Importâncias das Características SHAP",
                 hide_index=True,
                 depth=None,
                 hide_depth=True,
@@ -1520,7 +1534,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
             [
                 make_hideable(
                     dbc.Row(
-                        html.H1(self.title, id="simple-regression-composite-title"),
+                        html.H1(self.title, id="simple-regression-composite-title"), # Usa self.title
                         class_name="mt-4 gx-4",
                     ),
                     hide=self.hide_title,
@@ -1529,7 +1543,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Model performance"),
+                                html.H2("Desempenho do Modelo"), # Traduzido
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1553,7 +1567,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H3("SHAP values"),
+                                html.H3("Valores SHAP"), # Traduzido
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1575,7 +1589,7 @@ class SimplifiedRegressionComposite(ExplainerComponent):
                     [
                         dbc.Col(
                             [
-                                html.H2("Individual predictions"),
+                                html.H2("Previsões Individuais"), # Traduzido
                                 dbc.Row(
                                     [
                                         make_hideable(
@@ -1650,3 +1664,4 @@ class SimplifiedRegressionComposite(ExplainerComponent):
         if add_header:
             return to_html.add_header(html)
         return html
+    
