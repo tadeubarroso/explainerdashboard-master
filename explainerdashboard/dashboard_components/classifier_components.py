@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# O __all__ abaixo parece ser de explainer_methods.py ou explainer.py,
-# mas o código a seguir é de dashboard_components.py ou similar. Mantido como fornecido pelo utilizador.
 __all__ = [
     "BaseExplainer",
     "ClassifierExplainer",
