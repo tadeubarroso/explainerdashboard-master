@@ -1,15 +1,10 @@
-# -*- coding: utf-8 -*-
-
-# O __all__ abaixo parece ser de explainer_methods.py ou explainer.py,
-# mas o código a seguir é de regression_components.py. Mantido como fornecido pelo utilizador.
 __all__ = [
-    "BaseExplainer",
-    "ClassifierExplainer",
-    "RegressionExplainer",
-    "RandomForestClassifierExplainer",
-    "RandomForestRegressionExplainer",
-    "XGBClassifierExplainer",
-    "XGBRegressionExplainer",
+    "RegressionRandomIndexComponent",
+    "RegressionPredictionSummaryComponent",
+    "PredictedVsActualComponent",
+    "ResidualsComponent",
+    "RegressionVsColComponent",
+    "RegressionModelSummaryComponent",
 ]
 
 import numpy as np
@@ -20,7 +15,6 @@ from dash import html, dcc, Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
-# Presumo que os imports abaixo estejam corretos no contexto do projeto original
 from ..dashboard_methods import *
 from .. import to_html
 

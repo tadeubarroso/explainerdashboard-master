@@ -1,17 +1,10 @@
-# -*- coding: utf-8 -*-
-
-# O __all__ abaixo pertence a explainer_methods.py, mas o código a seguir
-# é de dashboard_components.py. Mantido como fornecido pelo utilizador.
 __all__ = [
-    "BaseExplainer",
-    "ClassifierExplainer",
-    "RegressionExplainer",
-    "RandomForestClassifierExplainer",
-    "RandomForestRegressionExplainer",
-    "XGBClassifierExplainer",
-    "XGBRegressionExplainer",
+    "PredictionSummaryComponent",
+    "ImportancesComponent",
+    "FeatureDescriptionsComponent",
+    "FeatureInputComponent",
+    "PdpComponent",
 ]
-from ..explainers import BaseExplainer, ClassifierExplainer, RegressionExplainer, RandomForestClassifierExplainer , RandomForestRegressionExplainer, XGBClassifierExplainer, XGBRegressionExplainer
 from math import ceil
 
 import numpy as np

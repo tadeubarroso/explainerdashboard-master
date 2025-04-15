@@ -1,15 +1,7 @@
-# -*- coding: utf-8 -*-
-
-# O __all__ abaixo parece ser de explainer_methods.py ou explainer.py,
-# mas o código a seguir é de decisiontree_components.py. Mantido como fornecido pelo utilizador.
 __all__ = [
-    "BaseExplainer",
-    "ClassifierExplainer",
-    "RegressionExplainer",
-    "RandomForestClassifierExplainer",
-    "RandomForestRegressionExplainer",
-    "XGBClassifierExplainer",
-    "XGBRegressionExplainer",
+    "DecisionTreesComponent",
+    "DecisionPathTableComponent",
+    "DecisionPathGraphComponent",
 ]
 
 import dash
@@ -17,7 +9,6 @@ from dash import html, dcc, Input, Output, State, dash_table
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
-# Presumo que os imports abaixo estejam corretos no contexto do projeto original
 from ..explainers import RandomForestExplainer, XGBExplainer
 from ..dashboard_methods import *
 from .classifier_components import ClassifierRandomIndexComponent

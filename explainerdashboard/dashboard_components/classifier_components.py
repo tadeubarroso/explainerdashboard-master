@@ -1,23 +1,26 @@
 __all__ = [
-    "BaseExplainer",
-    "ClassifierExplainer",
-    "RegressionExplainer",
-    "RandomForestClassifierExplainer",
-    "RandomForestRegressionExplainer",
-    "XGBClassifierExplainer",
-    "XGBRegressionExplainer",
+    "ClassifierRandomIndexComponent",
+    "ClassifierPredictionSummaryComponent",
+    "PrecisionComponent",
+    "ConfusionMatrixComponent",
+    "LiftCurveComponent",
+    "ClassificationComponent",
+    "RocAucComponent",
+    "PrAucComponent",
+    "CumulativePrecisionComponent",
+    "ClassifierModelSummaryComponent",
 ]
-from math import ceil
 
 import numpy as np
 import pandas as pd
 
 import dash
-from dash import html, dcc, Input, Output, State, dash_table
+from dash import html, dcc, Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
-# Presumo que os imports abaixo estejam corretos no contexto do projeto original
+import plotly.graph_objs as go
+
 from ..dashboard_methods import *
 from .. import to_html
 

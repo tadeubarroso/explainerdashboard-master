@@ -1,21 +1,19 @@
-# -*- coding: utf-8 -*-
-
-# O __all__ abaixo parece ser de explainer_methods.py ou explainer.py,
-# mas o código a seguir é de composites.py. Mantido como fornecido pelo utilizador.
 __all__ = [
-    "BaseExplainer",
-    "ClassifierExplainer",
-    "RegressionExplainer",
-    "RandomForestClassifierExplainer",
-    "RandomForestRegressionExplainer",
-    "XGBClassifierExplainer",
-    "XGBRegressionExplainer",
+    "ImportancesComposite",
+    "ClassifierModelStatsComposite",
+    "RegressionModelStatsComposite",
+    "IndividualPredictionsComposite",
+    "ShapDependenceComposite",
+    "ShapInteractionsComposite",
+    "DecisionTreesComposite",
+    "WhatIfComposite",
+    "SimplifiedClassifierComposite",
+    "SimplifiedRegressionComposite",
 ]
 
 import dash_bootstrap_components as dbc
 from dash import html
 
-# Presumo que os imports abaixo estejam corretos no contexto do projeto original
 from ..explainers import RandomForestExplainer, XGBExplainer
 from ..dashboard_methods import *
 from .classifier_components import *
