@@ -964,9 +964,9 @@ def plotly_dependence_plot(
         )
 
     if interaction:
-        title = f"Interaction plot for {X_col.name} and {interact_col.name}"
+        title = f"Gráfico de interação para {X_col.name} e {interact_col.name}"
     else:
-        title = f"Dependence plot for {X_col.name}"
+        title = f"Gráfico de dependência para {X_col.name}"
 
     layout = go.Layout(
         title=title,
@@ -1047,7 +1047,7 @@ def plotly_shap_violin_plot(
 
     assert not is_numeric_dtype(
         X_col
-    ), f"{X_col.name} is not categorical! Can only plot violin plots for categorical features!"
+    ), f"{X_col.name} não é categórica! Só é possível desenhar gráficos de violino para características categóricas!"
 
     if cats_order is None:
         cats_order = sorted(X_col.unique().tolist())
@@ -1067,7 +1067,7 @@ def plotly_shap_violin_plot(
         elif isinstance(highlight_index, str):
             assert (
                 highlight_index in idxs
-            ), f"highlight_index should be int or in idxs, {highlight_index} is neither!"
+            ), f"highlight_index deve ser um inteiro ou estar em idxs, {highlight_index} não é nenhum deles!"
             highlight_idx = idxs.get_loc(highlight_index)
             highlight_name = highlight_index
 
@@ -1276,20 +1276,20 @@ def plotly_shap_violin_plot(
             fig.update_yaxes(showgrid=False, zeroline=False, row=1, col=2 + i * 2)
 
     fig.update_layout(
-        yaxis=dict(title=f"SHAP value ({units})" if units != "" else "SHAP value"),
+        yaxis=dict(title=f"Valor SHAP ({units})" if units != "" else "Valor SHAP"),
         hovermode="closest",
     )
 
     if X_color_col is not None and interaction:
         fig.update_layout(
-            title=f"Interaction plot for {X_col.name} and {X_color_col.name}"
+            title=f"Gráfico de interação para {X_col.name} e {X_color_col.name}"
         )
     elif X_color_col is not None:
         fig.update_layout(
-            title=f"Shap values for {X_col.name}<br>(colored by {X_color_col.name})"
+            title=f"Valores SHAP para {X_col.name}<br>(colorido por {X_color_col.name})"
         )
     else:
-        fig.update_layout(title=f"Shap values for {X_col.name}")
+        fig.update_layout(title=f"Valores SHAP para {X_col.name}")
     fig.update_layout(margin=dict(t=40, b=40, l=40, r=40))
     return fig
 

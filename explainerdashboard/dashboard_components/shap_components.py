@@ -1,4 +1,4 @@
-__all__ = [
+Feature__all__ = [
     "ShapSummaryComponent",
     "ShapDependenceComponent",
     "ShapSummaryDependenceConnector",
@@ -504,7 +504,7 @@ class ShapDependenceComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Feature:",
+                                                "Característica:",
                                                 id="shap-dependence-col-label-"
                                                 + self.name,
                                             ),
@@ -627,7 +627,7 @@ class ShapDependenceComponent(ExplainerComponent):
                                                         dbc.Checklist(
                                                             options=[
                                                                 {
-                                                                    "label": "Remove outliers",
+                                                                    "label": "Remover valores atípicos",
                                                                     "value": True,
                                                                 }
                                                             ],
@@ -874,9 +874,9 @@ class InteractionSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Interactions Summary",
+        title="Sumário de Interaçõe",
         name=None,
-        subtitle="Ordering features by shap interaction value",
+        subtitle="Ordenação das características por valor de interação SHAP",
         hide_title=False,
         hide_subtitle=False,
         hide_col=False,
@@ -945,13 +945,14 @@ class InteractionSummaryComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        Shows shap interaction values. Each shap value can be decomposed into a direct
-        effect and indirect effects. The indirect effects are due to interactions
-        of the feature with other feature. For example the fact that you know
-        the gender of a passenger on the titanic will have a direct effect (women
-        more likely to survive then men), but may also have indirect effects through
-        for example passenger class (first class women more likely to survive than
-        average woman, third class women less likely).
+        Mostra os valores de interação SHAP. Cada valor SHAP pode ser decomposto num 
+        efeito direto e em efeitos indiretos. Os efeitos indiretos devem-se a interações 
+        da característica com outras características. Por exemplo, o facto de saber o 
+        género de um passageiro no Titanic terá um efeito direto (as mulheres têm maior 
+        probabilidade de sobreviver do que os homens), mas também pode ter efeitos indiretos 
+        através, por exemplo, da classe do passageiro (as mulheres de primeira classe têm 
+        maior probabilidade de sobreviver do que a mulher média, as mulheres de terceira 
+        classe têm menos probabilidade).
         """
         self.popout = GraphPopout(
             "interaction-summary-" + self.name + "popout",
@@ -997,12 +998,12 @@ class InteractionSummaryComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Feature",
+                                                "Característica",
                                                 id="interaction-summary-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Feature to select interactions effects for",
+                                                "Característica para selecionar efeitos de interação.",
                                                 target="interaction-summary-col-label-"
                                                 + self.name,
                                             ),
@@ -1024,12 +1025,12 @@ class InteractionSummaryComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Depth:",
+                                                "Profundidade:",
                                                 id="interaction-summary-depth-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Number of interaction features to display",
+                                                "Número de características de interação a exibir.",
                                                 target="interaction-summary-depth-label-"
                                                 + self.name,
                                             ),
@@ -1058,13 +1059,13 @@ class InteractionSummaryComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Label(
-                                                        " Tipo de Sumário",
+                                                        "Tipo de Sumário",
                                                         id="interaction-summary-type-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "Display mean absolute SHAP value per feature (aggregate)"
-                                                        " or display every single shap value per feature (detailed)",
+                                                        "Mostrar valor SHAP absoluto médio por característica (agregado)" 
+                                                        "ou mostrar cada valor SHAP individual por característica (detalhado)",
                                                         target="interaction-summary-type-label-"
                                                         + self.name,
                                                     ),
@@ -1101,8 +1102,8 @@ class InteractionSummaryComponent(ExplainerComponent):
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        f"Select {self.explainer.index_name} to highlight in plot. "
-                                                        "You can also select by clicking on a scatter point in the graph.",
+                                                        f"Selecione {self.explainer.index_name} para destacar no gráfico. "
+                                                        "Também pode selecionar clicando num ponto no gráfico.",
                                                         target="interaction-summary-index-label-"
                                                         + self.name,
                                                     ),
@@ -1247,9 +1248,9 @@ class InteractionDependenceComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Interaction Dependence",
+        title="Dependência de Interação",
         name=None,
-        subtitle="Relation between feature value and shap interaction value",
+        subtitle="Relação entre o valor da característica e o valor de interação SHAP",
         hide_title=False,
         hide_subtitle=False,
         hide_col=False,
@@ -1350,9 +1351,9 @@ class InteractionDependenceComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        This plot shows the relation between feature values and shap interaction values.
-        This allows you to investigate interactions between features in determining
-        the prediction of the model.
+        Este gráfico mostra a relação entre os valores das características e os valores 
+        de interação SHAP. Isto permite-lhe investigar as interações entre características 
+        na determinação da previsão do modelo.
         """
         self.popout_bottom = GraphPopout(
             self.name + "popout-bottom",
@@ -1407,12 +1408,12 @@ class InteractionDependenceComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Feature:",
+                                                "Característica:",
                                                 id="interaction-dependence-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Select feature to display shap interactions for",
+                                                "Selecione a característica para exibir as interações SHAP",
                                                 target="interaction-dependence-col-label-"
                                                 + self.name,
                                             ),
@@ -1434,13 +1435,13 @@ class InteractionDependenceComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             html.Label(
-                                                "Interaction:",
+                                                "Interação:",
                                                 id="interaction-dependence-interact-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Select feature to show interaction values for.  Two plots will be shown: "
-                                                "both Feature vs Interaction Feature and Interaction Feature vs Feature.",
+                                                "Selecione a característica para mostrar os valores de interação. Serão mostrados dois gráficos:"
+                                                "tanto Característica vs Característica de Interação como Característica de Interação vs Característica.",
                                                 target="interaction-dependence-interact-col-label-"
                                                 + self.name,
                                             ),
@@ -1469,9 +1470,9 @@ class InteractionDependenceComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select {self.explainer.index_name} to highlight in the plot."
-                                                "You can also select by clicking on a scatter marker in the accompanying"
-                                                " shap interaction summary plot (detailed).",
+                                                f"Selecione {self.explainer.index_name} para destacar no gráfico." 
+                                                "Também pode selecionar clicando num marcador de dispersão " 
+                                                "no gráfico de sumário de interação SHAP correspondente (detalhado).",
                                                 target="interaction-dependence-index-label-"
                                                 + self.name,
                                             ),
@@ -1529,14 +1530,14 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Tooltip(
-                                                        "Remove outliers (> 1.5*IQR) in feature and interaction feature from plot.",
+                                                        "Remover valores atípicos (> 1.5*AIQ) na característica e na característica de interação do gráfico.",
                                                         target="interaction-dependence-top-outliers-"
                                                         + self.name,
                                                     ),
                                                     dbc.Checklist(
                                                         options=[
                                                             {
-                                                                "label": "Remove outliers",
+                                                                "label": "Remover valores atípicos",
                                                                 "value": True,
                                                             }
                                                         ],
@@ -1566,7 +1567,7 @@ class InteractionDependenceComponent(ExplainerComponent):
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "Maximum number of categories to display",
+                                                        "Número máximo de categorias a exibir",
                                                         target="interaction-dependence-top-n-categories-label-"
                                                         + self.name,
                                                     ),
@@ -1598,13 +1599,14 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     html.Label(
-                                                        "Sort categories:",
+                                                        "Ordenar categorias:",
                                                         id="interaction-dependence-top-categories-sort-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "How to sort the categories: Alphabetically, most common "
-                                                        "first (Frequency), or highest mean absolute SHAP value first (Shap impact)",
+                                                        "Como ordenar as categorias: Alfabeticamente,"
+                                                        "mais comuns primeiro (Frequência), " 
+                                                        "ou pelo maior valor SHAP absoluto médio primeiro (Impacto SHAP)",
                                                         target="interaction-dependence-top-categories-sort-label-"
                                                         + self.name,
                                                     ),
@@ -1613,15 +1615,15 @@ class InteractionDependenceComponent(ExplainerComponent):
                                                         + self.name,
                                                         options=[
                                                             {
-                                                                "label": "Alphabetically",
+                                                                "label": "Alfabeticamente",
                                                                 "value": "alphabet",
                                                             },
                                                             {
-                                                                "label": "Frequency",
+                                                                "label": "Frequência",
                                                                 "value": "freq",
                                                             },
                                                             {
-                                                                "label": "Shap impact",
+                                                                "label": "Impacto SHAP",
                                                                 "value": "shap",
                                                             },
                                                         ],
@@ -1690,14 +1692,14 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Tooltip(
-                                                        "Remove outliers (> 1.5*IQR) in feature and interaction feature from plot.",
+                                                        "Remover valores atípicos (> 1.5*AIQ) na característica e na característica de interação do gráfico.",
                                                         target="interaction-dependence-bottom-outliers-"
                                                         + self.name,
                                                     ),
                                                     dbc.Checklist(
                                                         options=[
                                                             {
-                                                                "label": "Remove outliers",
+                                                                "label": "Remover valores atípicos",
                                                                 "value": True,
                                                             }
                                                         ],
@@ -1722,12 +1724,12 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
-                                                        "Categories:",
+                                                        "Categorias:",
                                                         id="interaction-dependence-bottom-n-categories-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "Maximum number of categories to display",
+                                                        "Número máximo de categorias a exibir",
                                                         target="interaction-dependence-bottom-n-categories-label-"
                                                         + self.name,
                                                     ),
@@ -1758,13 +1760,13 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     html.Label(
-                                                        "Sort categories:",
+                                                        "Ordenar categorias:",
                                                         id="interaction-dependence-bottom-categories-sort-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "How to sort the categories: Alphabetically, most common "
-                                                        "first (Frequency), or highest mean absolute SHAP value first (Shap impact)",
+                                                        "Como ordenar as categorias: Alfabeticamente, mais comuns primeiro (Frequência),"
+                                                        "ou pelo maior valor SHAP absoluto médio primeiro (Impacto SHAP)",
                                                         target="interaction-dependence-bottom-categories-sort-label-"
                                                         + self.name,
                                                     ),
@@ -1773,15 +1775,15 @@ class InteractionDependenceComponent(ExplainerComponent):
                                                         + self.name,
                                                         options=[
                                                             {
-                                                                "label": "Alphabetically",
+                                                                "label": "Alfabeticamente",
                                                                 "value": "alphabet",
                                                             },
                                                             {
-                                                                "label": "Frequency",
+                                                                "label": "Frequência",
                                                                 "value": "freq",
                                                             },
                                                             {
-                                                                "label": "Shap impact",
+                                                                "label": "Impacto SHAP",
                                                                 "value": "shap",
                                                             },
                                                         ],
@@ -2019,9 +2021,9 @@ class ShapContributionsGraphComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Contributions Plot",
+        title="Gráfico de Contribuições",
         name=None,
-        subtitle="How has each feature contributed to the prediction?",
+        subtitle="Como contribuiu cada característica para a previsão?",
         hide_title=False,
         hide_subtitle=False,
         hide_index=False,
@@ -2094,11 +2096,11 @@ class ShapContributionsGraphComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        This plot shows the contribution that each individual feature has had
-        on the prediction for a specific observation. The contributions (starting
-        from the population average) add up to the final prediction. This allows you
-        to explain exactly how each individual prediction has been built up
-        from all the individual ingredients in the model.
+        Este gráfico mostra a contribuição que cada característica individual teve 
+        na previsão para uma observação específica. As contribuições (a partir da 
+        média da população) somam até à previsão final. Isto permite-lhe explicar 
+        exatamente como cada previsão individual foi construída a partir de todos 
+        os ingredientes individuais no modelo.
         """
 
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
@@ -2168,7 +2170,7 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select the {self.explainer.index_name} to display the feature contributions for",
+                                                f"Selecione {self.explainer.index_name} para exibir as contribuições das características",
                                                 target="contributions-graph-index-label-"
                                                 + self.name,
                                             ),
@@ -2182,7 +2184,7 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Depth:",
+                                                "Profundidade:",
                                                 id="contributions-graph-depth-label-"
                                                 + self.name,
                                             ),
@@ -2217,15 +2219,15 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Sorting:",
+                                                "Ordenação:",
                                                 id="contributions-graph-sorting-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Sort the features either by highest absolute (positive or negative) impact (absolute), "
-                                                "from most positive the most negative (high-to-low)"
-                                                "from most negative to most positive (low-to-high or "
-                                                "according the global feature importance ordering (importance).",
+                                                "Ordene as características pelo maior impacto absoluto (positivo ou negativo) (Absoluto), " 
+                                                "do mais positivo para o mais negativo (Do Maior para o Menor), " 
+                                                "do mais negativo para o mais positivo (Do Menor para o Maior) ou " 
+                                                "de acordo com a ordenação de importância global das características (Importância).",
                                                 target="contributions-graph-sorting-label-"
                                                 + self.name,
                                             ),
@@ -2234,19 +2236,19 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
-                                                        "label": "Absolute",
+                                                        "label": "Absoluto",
                                                         "value": "abs",
                                                     },
                                                     {
-                                                        "label": "High to Low",
+                                                        "label": "Do Maior para o Menor",
                                                         "value": "high-to-low",
                                                     },
                                                     {
-                                                        "label": "Low to High",
+                                                        "label": "Do Menor para o Maior",
                                                         "value": "low-to-high",
                                                     },
                                                     {
-                                                        "label": "Importance",
+                                                        "label": "Importância",
                                                         "value": "importance",
                                                     },
                                                 ],
@@ -2262,12 +2264,12 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Orientation:",
+                                                "Orientação:",
                                                 id="contributions-graph-orientation-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Show vertical bars left to right or horizontal bars from top to bottom",
+                                                "Mostrar barras verticais da esquerda para a direita ou barras horizontais de cima para baixo",
                                                 target="contributions-graph-orientation-label-"
                                                 + self.name,
                                             ),
@@ -2354,7 +2356,7 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                 )
                 html = to_html.fig(fig)
             else:
-                html = "<div>no index selected</div>"
+                html = "<div>Nenhum índice selecionado</div>"
         else:
             inputs = {
                 k: v
@@ -2382,7 +2384,7 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                 )
                 html = to_html.fig(fig)
             else:
-                html = f"<div>input data incorrect</div>"
+                html = f"<div>Dados de entrada incorretos</div>"
 
         html = to_html.card(html, title=self.title, subtitle=self.subtitle)
         if add_header:
@@ -2457,9 +2459,9 @@ class ShapContributionsTableComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Contributions Table",
+        title="Tabela de Contribuições",
         name=None,
-        subtitle="How has each feature contributed to the prediction?",
+        subtitle="Como contribuiu cada característica para a previsão?",
         hide_title=False,
         hide_subtitle=False,
         hide_index=False,
@@ -2521,11 +2523,11 @@ class ShapContributionsTableComponent(ExplainerComponent):
 
         if self.description is None:
             self.description = """
-        This tables shows the contribution that each individual feature has had
-        on the prediction for a specific observation. The contributions (starting
-        from the population average) add up to the final prediction. This allows you
-        to explain exactly how each individual prediction has been built up
-        from all the individual ingredients in the model.
+        Esta tabela mostra a contribuição que cada característica individual teve 
+        na previsão para uma observação específica. As contribuições (a partir da 
+        média da população) somam até à previsão final. Isto permite-lhe explicar 
+        exatamente como cada previsão individual foi construída a partir de todos 
+        os ingredientes individuais no modelo.
         """
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
         self.index_selector = IndexSelector(
@@ -2579,7 +2581,7 @@ class ShapContributionsTableComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select the {self.explainer.index_name} to display the feature contributions for",
+                                                f"Selecione {self.explainer.index_name} para exibir as contribuições das características",
                                                 target="contributions-table-index-label-"
                                                 + self.name,
                                             ),
@@ -2593,7 +2595,7 @@ class ShapContributionsTableComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Depth:",
+                                                "Profundidade:",
                                                 id="contributions-table-depth-label-"
                                                 + self.name,
                                             ),
@@ -2626,15 +2628,15 @@ class ShapContributionsTableComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Sorting:",
+                                                "Ordenação:",
                                                 id="contributions-table-sorting-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Sort the features either by highest absolute (positive or negative) impact (absolute), "
-                                                "from most positive the most negative (high-to-low)"
-                                                "from most negative to most positive (low-to-high or "
-                                                "according the global feature importance ordering (importance).",
+                                                "Ordene as características pelo maior impacto absoluto (positivo ou negativo) (Absoluto), " 
+                                                "do mais positivo para o mais negativo (Do Maior para o Menor), " 
+                                                "do mais negativo para o mais positivo (Do Menor para o Maior) ou " 
+                                                "de acordo com a ordenação de importância global das características (Importância).",
                                                 target="contributions-table-sorting-label-"
                                                 + self.name,
                                             ),
@@ -2643,19 +2645,19 @@ class ShapContributionsTableComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
-                                                        "label": "Absolute",
+                                                        "label": "Absoluto",
                                                         "value": "abs",
                                                     },
                                                     {
-                                                        "label": "High to Low",
+                                                        "label": "Do Maior para o Menor",
                                                         "value": "high-to-low",
                                                     },
                                                     {
-                                                        "label": "Low to High",
+                                                        "label": "Do Menor para o Maior",
                                                         "value": "low-to-high",
                                                     },
                                                     {
-                                                        "label": "Importance",
+                                                        "label": "Importância",
                                                         "value": "importance",
                                                     },
                                                 ],
@@ -2719,7 +2721,7 @@ class ShapContributionsTableComponent(ExplainerComponent):
                 )
                 html = to_html.table_from_df(contrib_df)
             else:
-                html = "<div>no index selected</div>"
+                html = "<div>Nenhum índice selecionado</div>"
         else:
             inputs = {
                 k: v
@@ -2741,7 +2743,7 @@ class ShapContributionsTableComponent(ExplainerComponent):
                 )
                 html = to_html.table_from_df(contrib_df)
             else:
-                html = f"<div>input data incorrect</div>"
+                html = f"<div>Dados de entrada incorretos</div>"
 
         html = to_html.card(html, title=self.title, subtitle=self.subtitle)
         if add_header:
