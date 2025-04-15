@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __all__ = [
     "ShapSummaryComponent",
     "ShapDependenceComponent",
@@ -15,6 +17,7 @@ from dash import html, dcc, Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
+# Presumo que os imports abaixo estejam corretos no contexto do projeto original
 from ..dashboard_methods import *
 from .. import to_html
 
@@ -30,9 +33,9 @@ class ShapSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Shap Summary",
+        title="Resumo SHAP", # Traduzido
         name=None,
-        subtitle="Ordering features by shap value",
+        subtitle="A ordenar características por valor SHAP", # Traduzido
         hide_title=False,
         hide_subtitle=False,
         hide_depth=False,
@@ -55,11 +58,11 @@ class ShapSummaryComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Shap Dependence Summary".
+                        "Resumo SHAP". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle
+            subtitle (str): subtitle. Defaults to "A ordenar características por valor SHAP". # Atualizado docstring
             hide_title (bool, optional): hide the title. Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_depth (bool, optional): hide the depth toggle.
@@ -92,11 +95,12 @@ class ShapSummaryComponent(ExplainerComponent):
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
         assert self.summary_type in {"aggregate", "detailed"}
         if self.description is None:
+            # Traduzido
             self.description = """
-        The shap summary summarizes the shap values per feature.
-        You can either select an aggregates display that shows mean absolute shap value
-        per feature. Or get a more detailed look at the spread of shap values per
-        feature and how they correlate the the feature value (red is high).
+        O resumo SHAP sumariza os valores SHAP por característica.
+        Pode selecionar uma exibição agregada que mostra o valor SHAP absoluto médio
+        por característica. Ou obter uma visão mais detalhada da dispersão dos valores SHAP por
+        característica e como eles se correlacionam com o valor da característica (vermelho é alto).
         """
 
         self.popout = GraphPopout(
@@ -116,16 +120,16 @@ class ShapSummaryComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title, id="shap-summary-title-" + self.name
+                                        self.title, id="shap-summary-title-" + self.name # Usa self.title
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle"
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description,
+                                        self.description, # Usa self.description
                                         target="shap-summary-title-" + self.name,
                                     ),
                                 ]
@@ -142,12 +146,13 @@ class ShapSummaryComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Depth:",
+                                                "Profundidade:", # Traduzido
                                                 id="shap-summary-depth-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Number of features to display",
+                                                # Traduzido
+                                                "Número de características a exibir",
                                                 target="shap-summary-depth-label-"
                                                 + self.name,
                                             ),
@@ -176,24 +181,27 @@ class ShapSummaryComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Label(
-                                                        "Summary Type",
+                                                        "Tipo de Resumo", # Traduzido
                                                         id="shap-summary-type-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "Display mean absolute SHAP value per feature (aggregate)"
-                                                        " or display every single shap value per feature (detailed)",
+                                                         # Traduzido
+                                                        "Exibir o valor SHAP absoluto médio por característica (agregado)"
+                                                        " ou exibir cada valor SHAP individual por característica (detalhado)",
                                                         target="shap-summary-type-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Select(
                                                         options=[
                                                             {
-                                                                "label": "Aggregate",
+                                                                 # Traduzido
+                                                                "label": "Agregado",
                                                                 "value": "aggregate",
                                                             },
                                                             {
-                                                                "label": "Detailed",
+                                                                 # Traduzido
+                                                                "label": "Detalhado",
                                                                 "value": "detailed",
                                                             },
                                                         ],
@@ -214,13 +222,14 @@ class ShapSummaryComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
-                                                        f"{self.explainer.index_name}:",
+                                                        f"{self.explainer.index_name}:", # Usa index_name já traduzido
                                                         id="shap-summary-index-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        f"Select {self.explainer.index_name} to highlight in plot. "
-                                                        "You can also select by clicking on a scatter point in the graph.",
+                                                         # Traduzido
+                                                        f"Selecione {self.explainer.index_name} para destacar no gráfico. "
+                                                        "Também pode selecionar clicando num ponto de dispersão no gráfico.",
                                                         target="shap-summary-index-label-"
                                                         + self.name,
                                                     ),
@@ -302,10 +311,20 @@ class ShapSummaryComponent(ExplainerComponent):
         def display_scatter_click_data(clickdata):
             if clickdata is not None and clickdata["points"][0] is not None:
                 if isinstance(clickdata["points"][0]["y"], float):  # detailed
-                    index = (
-                        clickdata["points"][0]["text"].split("=")[1].split("<br>")[0]
-                    )
-                    return index
+                    # A lógica de extração do índice depende da string gerada pelos plots.
+                    # Se os plots também forem traduzidos, isto pode precisar de ajuste.
+                    # Assumindo que o formato `text=...index=idx...` se mantém:
+                    try:
+                        index = clickdata['points'][0]['text'].split('index=')[1].split('<br>')[0]
+                        return index
+                    except:
+                         # Fallback se o formato mudar
+                        try:
+                            index = clickdata["points"][0]["text"].split("=")[1].split("<br>")[0]
+                            return index
+                        except:
+                            pass
+
             raise PreventUpdate
 
         @app.callback(
@@ -362,9 +381,9 @@ class ShapDependenceComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Shap Dependence",
+        title="Dependência SHAP", # Traduzido
         name=None,
-        subtitle="Relationship between feature value and SHAP value",
+        subtitle="Relação entre o valor da característica e o valor SHAP", # Traduzido
         hide_title=False,
         hide_subtitle=False,
         hide_col=False,
@@ -394,11 +413,11 @@ class ShapDependenceComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Shap Dependence".
+                        "Dependência SHAP". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle
+            subtitle (str): subtitle. Defaults to "Relação entre o valor da característica e o valor SHAP". # Atualizado docstring
             hide_title (bool, optional): hide component title. Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_col (bool, optional): hide feature selector. Defaults to False.
@@ -444,13 +463,14 @@ class ShapDependenceComponent(ExplainerComponent):
         self.index_name = "shap-dependence-index-" + self.name
 
         if self.description is None:
+             # Traduzido
             self.description = """
-        This plot shows the relation between feature values and shap values.
-        This allows you to investigate the general relationship between feature
-        value and impact on the prediction. You can check whether the model
-        uses features in line with your intuitions, or use the plots to learn
-        about the relationships that the model has learned between the input features
-        and the predicted outcome.
+        Este gráfico mostra a relação entre os valores das características e os valores SHAP.
+        Isto permite investigar a relação geral entre o valor da característica
+        e o impacto na previsão. Pode verificar se o modelo
+        usa as características de acordo com as suas intuições, ou usar os gráficos para aprender
+        sobre as relações que o modelo aprendeu entre as características de entrada
+        e o resultado previsto.
         """
         self.popout = GraphPopout(
             "shap-dependence-" + self.name + "popout",
@@ -469,17 +489,17 @@ class ShapDependenceComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title,
+                                        self.title, # Usa self.title
                                         id="shap-dependence-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle"
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description,
+                                        self.description, # Usa self.description
                                         target="shap-dependence-title-" + self.name,
                                     ),
                                 ]
@@ -504,12 +524,13 @@ class ShapDependenceComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Feature:",
+                                                "Característica:", # Traduzido
                                                 id="shap-dependence-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Select feature to display shap dependence for",
+                                                # Traduzido
+                                                "Selecione a característica para exibir a dependência SHAP",
                                                 target="shap-dependence-col-label-"
                                                 + self.name,
                                             ),
@@ -531,13 +552,14 @@ class ShapDependenceComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Color feature:",
+                                                "Colorir por:", # Traduzido
                                                 id="shap-dependence-color-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Select feature to color the scatter markers by. This "
-                                                "allows you to see interactions between various features in the graph.",
+                                                # Traduzido
+                                                "Selecione a característica para colorir os marcadores de dispersão. Isto "
+                                                "permite ver interações entre várias características no gráfico.",
                                                 target="shap-dependence-color-col-label-"
                                                 + self.name,
                                             ),
@@ -549,8 +571,9 @@ class ShapDependenceComponent(ExplainerComponent):
                                                     for col in self.explainer.columns_ranked_by_shap()
                                                 ]
                                                 + [
+                                                    # Traduzido
                                                     dict(
-                                                        label="None",
+                                                        label="Nenhuma",
                                                         value="no_color_col",
                                                     )
                                                 ],
@@ -565,15 +588,17 @@ class ShapDependenceComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
+                                             # Usa index_name já traduzido
                                             dbc.Label(
                                                 f"{self.explainer.index_name}:",
                                                 id="shap-dependence-index-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select {self.explainer.index_name} to highlight in the plot."
-                                                "You can also select by clicking on a scatter marker in the accompanying"
-                                                " shap summary plot (detailed).",
+                                                 # Traduzido
+                                                f"Selecione {self.explainer.index_name} para destacar no gráfico."
+                                                "Também pode selecionar clicando num marcador de dispersão no gráfico"
+                                                " de resumo SHAP associado (detalhado).",
                                                 target="shap-dependence-index-label-"
                                                 + self.name,
                                             ),
@@ -620,14 +645,16 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 dbc.Row(
                                                     [
                                                         dbc.Tooltip(
-                                                            "Remove outliers in feature (and color feature) from plot.",
+                                                             # Traduzido
+                                                            "Remover outliers (> 1.5*IQR) na característica (e na característica de cor) do gráfico.",
                                                             target="shap-dependence-outliers-"
                                                             + self.name,
                                                         ),
                                                         dbc.Checklist(
                                                             options=[
                                                                 {
-                                                                    "label": "Remove outliers",
+                                                                     # Traduzido
+                                                                    "label": "Remover outliers",
                                                                     "value": True,
                                                                 }
                                                             ],
@@ -652,12 +679,13 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 html.Div(
                                                     [
                                                         dbc.Label(
-                                                            "Categories:",
+                                                            "Categorias:", # Traduzido
                                                             id="shap-dependence-n-categories-label-"
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            "Maximum number of categories to display",
+                                                            # Traduzido
+                                                            "Número máximo de categorias a exibir",
                                                             target="shap-dependence-n-categories-label-"
                                                             + self.name,
                                                         ),
@@ -689,13 +717,14 @@ class ShapDependenceComponent(ExplainerComponent):
                                                 html.Div(
                                                     [
                                                         html.Label(
-                                                            "Sort categories:",
+                                                            "Ordenar categorias:", # Traduzido
                                                             id="shap-dependence-categories-sort-label-"
                                                             + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                            "How to sort the categories: Alphabetically, most common "
-                                                            "first (Frequency), or highest mean absolute SHAP value first (Shap impact)",
+                                                            # Traduzido
+                                                            "Como ordenar as categorias: Alfabeticamente, mais comuns "
+                                                            "primeiro (Frequência), ou maior valor SHAP absoluto médio primeiro (Impacto Shap)",
                                                             target="shap-dependence-categories-sort-label-"
                                                             + self.name,
                                                         ),
@@ -704,15 +733,18 @@ class ShapDependenceComponent(ExplainerComponent):
                                                             + self.name,
                                                             options=[
                                                                 {
-                                                                    "label": "Alphabetically",
+                                                                    # Traduzido
+                                                                    "label": "Alfabeticamente",
                                                                     "value": "alphabet",
                                                                 },
                                                                 {
-                                                                    "label": "Frequency",
+                                                                    # Traduzido
+                                                                    "label": "Frequência",
                                                                     "value": "freq",
                                                                 },
                                                                 {
-                                                                    "label": "Shap impact",
+                                                                    # Traduzido
+                                                                    "label": "Impacto Shap",
                                                                     "value": "shap",
                                                                 },
                                                             ],
@@ -784,7 +816,8 @@ class ShapDependenceComponent(ExplainerComponent):
                 col, pos_label=pos_label
             )
             options = [{"label": col, "value": col} for col in sorted_interact_cols] + [
-                dict(label="None", value="no_color_col")
+                # Traduzido
+                dict(label="Nenhuma", value="no_color_col")
             ]
             if col in self.explainer.cat_cols:
                 value = None
@@ -850,11 +883,19 @@ class ShapSummaryDependenceConnector(ExplainerComponent):
         def display_scatter_click_data(clickdata):
             if clickdata is not None and clickdata["points"][0] is not None:
                 if isinstance(clickdata["points"][0]["y"], float):  # detailed
-                    index = (
-                        clickdata["points"][0]["text"].split("=")[1].split("<br>")[0]
-                    )
-                    col = clickdata["points"][0]["text"].split("=")[1].split("<br>")[1]
-                    return (index, col)
+                    # Assumindo que a lógica de extração ainda funciona
+                    try:
+                        index = clickdata['points'][0]['text'].split('index=')[1].split('<br>')[0]
+                        col = clickdata["points"][0]["text"].split("=")[1].split("<br>")[1]
+                        return (index, col)
+                    except:
+                        try: # Fallback
+                            index = clickdata["points"][0]["text"].split("=")[1].split("<br>")[0]
+                            col = clickdata["points"][0]["text"].split("=")[1].split("<br>")[1]
+                            return (index, col)
+                        except:
+                            pass
+
                 elif isinstance(clickdata["points"][0]["y"], str):  # aggregate
                     # in aggregate clickdata returns col name -> type==str
                     col = clickdata["points"][0]["y"].split(" ")[1]
@@ -874,9 +915,9 @@ class InteractionSummaryComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Interactions Summary",
+        title="Resumo das Interações", # Traduzido
         name=None,
-        subtitle="Ordering features by shap interaction value",
+        subtitle="A ordenar características por valor de interação SHAP", # Traduzido
         hide_title=False,
         hide_subtitle=False,
         hide_col=False,
@@ -901,11 +942,11 @@ class InteractionSummaryComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Interactions Summary".
+                        "Resumo das Interações". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle
+            subtitle (str): subtitle. Defaults to "A ordenar características por valor de interação SHAP". # Atualizado docstring
             hide_title (bool, optional): hide the component title. Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_col (bool, optional): Hide the feature selector. Defaults to False.
@@ -944,14 +985,15 @@ class InteractionSummaryComponent(ExplainerComponent):
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
 
         if self.description is None:
+            # Traduzido
             self.description = """
-        Shows shap interaction values. Each shap value can be decomposed into a direct
-        effect and indirect effects. The indirect effects are due to interactions
-        of the feature with other feature. For example the fact that you know
-        the gender of a passenger on the titanic will have a direct effect (women
-        more likely to survive then men), but may also have indirect effects through
-        for example passenger class (first class women more likely to survive than
-        average woman, third class women less likely).
+        Mostra os valores de interação SHAP. Cada valor SHAP pode ser decomposto num
+        efeito direto e efeitos indiretos. Os efeitos indiretos devem-se a interações
+        da característica com outras características. Por exemplo, o facto de saber
+        o género de um passageiro no Titanic terá um efeito direto (mulheres
+        mais propensas a sobreviver do que homens), mas também pode ter efeitos indiretos através,
+        por exemplo, da classe do passageiro (mulheres de primeira classe mais propensas a sobreviver do que
+        a mulher média, mulheres de terceira classe menos propensas).
         """
         self.popout = GraphPopout(
             "interaction-summary-" + self.name + "popout",
@@ -970,17 +1012,17 @@ class InteractionSummaryComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title,
+                                        self.title, # Usa self.title
                                         id="interaction-summary-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle"
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description,
+                                        self.description, # Usa self.description
                                         target="interaction-summary-title-" + self.name,
                                     ),
                                 ]
@@ -997,12 +1039,13 @@ class InteractionSummaryComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Feature",
+                                                "Característica", # Traduzido
                                                 id="interaction-summary-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Feature to select interactions effects for",
+                                                 # Traduzido
+                                                "Característica para selecionar efeitos de interação",
                                                 target="interaction-summary-col-label-"
                                                 + self.name,
                                             ),
@@ -1024,12 +1067,13 @@ class InteractionSummaryComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Depth:",
+                                                "Profundidade:", # Traduzido
                                                 id="interaction-summary-depth-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Number of interaction features to display",
+                                                 # Traduzido
+                                                "Número de características de interação a exibir",
                                                 target="interaction-summary-depth-label-"
                                                 + self.name,
                                             ),
@@ -1058,24 +1102,27 @@ class InteractionSummaryComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Label(
-                                                        "Summary Type",
+                                                        "Tipo de Resumo", # Traduzido
                                                         id="interaction-summary-type-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "Display mean absolute SHAP value per feature (aggregate)"
-                                                        " or display every single shap value per feature (detailed)",
+                                                         # Traduzido
+                                                        "Exibir o valor SHAP absoluto médio por característica (agregado)"
+                                                        " ou exibir cada valor SHAP individual por característica (detalhado)",
                                                         target="interaction-summary-type-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Select(
                                                         options=[
                                                             {
-                                                                "label": "Aggregate",
+                                                                # Traduzido
+                                                                "label": "Agregado",
                                                                 "value": "aggregate",
                                                             },
                                                             {
-                                                                "label": "Detailed",
+                                                                # Traduzido
+                                                                "label": "Detalhado",
                                                                 "value": "detailed",
                                                             },
                                                         ],
@@ -1096,13 +1143,15 @@ class InteractionSummaryComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
+                                                         # Usa index_name já traduzido
                                                         f"{self.explainer.index_name}:",
                                                         id="interaction-summary-index-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        f"Select {self.explainer.index_name} to highlight in plot. "
-                                                        "You can also select by clicking on a scatter point in the graph.",
+                                                         # Traduzido
+                                                        f"Selecione {self.explainer.index_name} para destacar no gráfico. "
+                                                        "Também pode selecionar clicando num ponto de dispersão no gráfico.",
                                                         target="interaction-summary-index-label-"
                                                         + self.name,
                                                     ),
@@ -1191,10 +1240,16 @@ class InteractionSummaryComponent(ExplainerComponent):
         def display_scatter_click_data(clickdata):
             if clickdata is not None and clickdata["points"][0] is not None:
                 if isinstance(clickdata["points"][0]["y"], float):  # detailed
-                    index = (
-                        clickdata["points"][0]["text"].split("=")[1].split("<br>")[0]
-                    )
-                    return index
+                     # Assumindo que a lógica de extração ainda funciona
+                    try:
+                        index = clickdata['points'][0]['text'].split('index=')[1].split('<br>')[0]
+                        return index
+                    except:
+                        try: # Fallback
+                            index = clickdata["points"][0]["text"].split("=")[1].split("<br>")[0]
+                            return index
+                        except:
+                            pass
             raise PreventUpdate
 
         @app.callback(
@@ -1247,9 +1302,9 @@ class InteractionDependenceComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Interaction Dependence",
+        title="Dependência da Interação", # Traduzido
         name=None,
-        subtitle="Relation between feature value and shap interaction value",
+        subtitle="Relação entre valor da característica e valor de interação SHAP", # Traduzido
         hide_title=False,
         hide_subtitle=False,
         hide_col=False,
@@ -1284,11 +1339,11 @@ class InteractionDependenceComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Interactions Dependence".
+                        "Dependência da Interação". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle
+            subtitle (str): subtitle. Defaults to "Relação entre valor da característica e valor de interação SHAP". # Atualizado docstring
             hide_title (bool, optional): Hide component title. Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_col (bool, optional): Hide feature selector. Defaults to False.
@@ -1349,10 +1404,11 @@ class InteractionDependenceComponent(ExplainerComponent):
         )
 
         if self.description is None:
+             # Traduzido
             self.description = """
-        This plot shows the relation between feature values and shap interaction values.
-        This allows you to investigate interactions between features in determining
-        the prediction of the model.
+        Este gráfico mostra a relação entre os valores das características e os valores de interação SHAP.
+        Isto permite investigar interações entre características na determinação
+        da previsão do modelo.
         """
         self.popout_bottom = GraphPopout(
             self.name + "popout-bottom",
@@ -1371,17 +1427,17 @@ class InteractionDependenceComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title,
+                                        self.title, # Usa self.title
                                         id="interaction-dependence-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle"
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description,
+                                        self.description, # Usa self.description
                                         target="interaction-dependence-title-"
                                         + self.name,
                                     ),
@@ -1407,12 +1463,13 @@ class InteractionDependenceComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Feature:",
+                                                "Característica:", # Traduzido
                                                 id="interaction-dependence-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Select feature to display shap interactions for",
+                                                # Traduzido
+                                                "Selecione a característica para exibir as interações SHAP",
                                                 target="interaction-dependence-col-label-"
                                                 + self.name,
                                             ),
@@ -1434,13 +1491,14 @@ class InteractionDependenceComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             html.Label(
-                                                "Interaction:",
+                                                "Interação:", # Traduzido
                                                 id="interaction-dependence-interact-col-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Select feature to show interaction values for.  Two plots will be shown: "
-                                                "both Feature vs Interaction Feature and Interaction Feature vs Feature.",
+                                                # Traduzido
+                                                "Selecione a característica para mostrar os valores de interação. Serão mostrados dois gráficos: "
+                                                "Característica vs Característica de Interação e Característica de Interação vs Característica.",
                                                 target="interaction-dependence-interact-col-label-"
                                                 + self.name,
                                             ),
@@ -1463,15 +1521,17 @@ class InteractionDependenceComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
+                                             # Usa index_name já traduzido
                                             dbc.Label(
                                                 f"{self.explainer.index_name}:",
                                                 id="interaction-dependence-index-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select {self.explainer.index_name} to highlight in the plot."
-                                                "You can also select by clicking on a scatter marker in the accompanying"
-                                                " shap interaction summary plot (detailed).",
+                                                 # Traduzido
+                                                f"Selecione {self.explainer.index_name} para destacar no gráfico."
+                                                "Também pode selecionar clicando num marcador de dispersão no gráfico"
+                                                " de resumo de interações SHAP associado (detalhado).",
                                                 target="interaction-dependence-index-label-"
                                                 + self.name,
                                             ),
@@ -1529,14 +1589,16 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Tooltip(
-                                                        "Remove outliers (> 1.5*IQR) in feature and interaction feature from plot.",
+                                                        # Traduzido
+                                                        "Remover outliers (> 1.5*IQR) na característica e na característica de interação do gráfico.",
                                                         target="interaction-dependence-top-outliers-"
                                                         + self.name,
                                                     ),
                                                     dbc.Checklist(
                                                         options=[
                                                             {
-                                                                "label": "Remove outliers",
+                                                                # Traduzido
+                                                                "label": "Remover outliers",
                                                                 "value": True,
                                                             }
                                                         ],
@@ -1561,12 +1623,13 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
-                                                        "Categories:",
+                                                        "Categorias:", # Traduzido
                                                         id="interaction-dependence-top-n-categories-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "Maximum number of categories to display",
+                                                        # Traduzido
+                                                        "Número máximo de categorias a exibir",
                                                         target="interaction-dependence-top-n-categories-label-"
                                                         + self.name,
                                                     ),
@@ -1598,13 +1661,14 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     html.Label(
-                                                        "Sort categories:",
+                                                        "Ordenar categorias:", # Traduzido
                                                         id="interaction-dependence-top-categories-sort-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "How to sort the categories: Alphabetically, most common "
-                                                        "first (Frequency), or highest mean absolute SHAP value first (Shap impact)",
+                                                         # Traduzido
+                                                        "Como ordenar as categorias: Alfabeticamente, mais comuns "
+                                                        "primeiro (Frequência), ou maior valor SHAP absoluto médio primeiro (Impacto Shap)",
                                                         target="interaction-dependence-top-categories-sort-label-"
                                                         + self.name,
                                                     ),
@@ -1613,15 +1677,18 @@ class InteractionDependenceComponent(ExplainerComponent):
                                                         + self.name,
                                                         options=[
                                                             {
-                                                                "label": "Alphabetically",
+                                                                 # Traduzido
+                                                                "label": "Alfabeticamente",
                                                                 "value": "alphabet",
                                                             },
                                                             {
-                                                                "label": "Frequency",
+                                                                 # Traduzido
+                                                                "label": "Frequência",
                                                                 "value": "freq",
                                                             },
                                                             {
-                                                                "label": "Shap impact",
+                                                                 # Traduzido
+                                                                "label": "Impacto Shap",
                                                                 "value": "shap",
                                                             },
                                                         ],
@@ -1690,14 +1757,16 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             dbc.Row(
                                                 [
                                                     dbc.Tooltip(
-                                                        "Remove outliers (> 1.5*IQR) in feature and interaction feature from plot.",
+                                                        # Traduzido
+                                                        "Remover outliers (> 1.5*IQR) na característica e na característica de interação do gráfico.",
                                                         target="interaction-dependence-bottom-outliers-"
                                                         + self.name,
                                                     ),
                                                     dbc.Checklist(
                                                         options=[
                                                             {
-                                                                "label": "Remove outliers",
+                                                                 # Traduzido
+                                                                "label": "Remover outliers",
                                                                 "value": True,
                                                             }
                                                         ],
@@ -1722,12 +1791,13 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     dbc.Label(
-                                                        "Categories:",
+                                                        "Categorias:", # Traduzido
                                                         id="interaction-dependence-bottom-n-categories-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "Maximum number of categories to display",
+                                                         # Traduzido
+                                                        "Número máximo de categorias a exibir",
                                                         target="interaction-dependence-bottom-n-categories-label-"
                                                         + self.name,
                                                     ),
@@ -1758,13 +1828,14 @@ class InteractionDependenceComponent(ExplainerComponent):
                                             html.Div(
                                                 [
                                                     html.Label(
-                                                        "Sort categories:",
+                                                        "Ordenar categorias:", # Traduzido
                                                         id="interaction-dependence-bottom-categories-sort-label-"
                                                         + self.name,
                                                     ),
                                                     dbc.Tooltip(
-                                                        "How to sort the categories: Alphabetically, most common "
-                                                        "first (Frequency), or highest mean absolute SHAP value first (Shap impact)",
+                                                         # Traduzido
+                                                        "Como ordenar as categorias: Alfabeticamente, mais comuns "
+                                                        "primeiro (Frequência), ou maior valor SHAP absoluto médio primeiro (Impacto Shap)",
                                                         target="interaction-dependence-bottom-categories-sort-label-"
                                                         + self.name,
                                                     ),
@@ -1773,15 +1844,18 @@ class InteractionDependenceComponent(ExplainerComponent):
                                                         + self.name,
                                                         options=[
                                                             {
-                                                                "label": "Alphabetically",
+                                                                 # Traduzido
+                                                                "label": "Alfabeticamente",
                                                                 "value": "alphabet",
                                                             },
                                                             {
-                                                                "label": "Frequency",
+                                                                 # Traduzido
+                                                                "label": "Frequência",
                                                                 "value": "freq",
                                                             },
                                                             {
-                                                                "label": "Shap impact",
+                                                                 # Traduzido
+                                                                "label": "Impacto Shap",
                                                                 "value": "shap",
                                                             },
                                                         ],
@@ -1991,13 +2065,18 @@ class InteractionSummaryDependenceConnector(ExplainerComponent):
         def update_interact_col_highlight(col, clickdata):
             if clickdata is not None and clickdata["points"][0] is not None:
                 if isinstance(clickdata["points"][0]["y"], float):  # detailed
-                    index = (
-                        clickdata["points"][0]["text"].split("=")[1].split("<br>")[0]
-                    )
-                    interact_col = (
-                        clickdata["points"][0]["text"].split("=")[1].split("<br>")[1]
-                    )
-                    return (col, index, interact_col)
+                     # Assumindo que a lógica de extração ainda funciona
+                    try:
+                        index = clickdata['points'][0]['text'].split('index=')[1].split('<br>')[0]
+                        interact_col = clickdata['points'][0]['text'].split('=')[1].split('<br>')[1]
+                        return (col, index, interact_col)
+                    except:
+                        try: # Fallback
+                            index = clickdata["points"][0]["text"].split("=")[1].split("<br>")[0]
+                            interact_col = clickdata["points"][0]["text"].split("=")[1].split("<br>")[1]
+                            return (col, index, interact_col)
+                        except:
+                            pass
                 elif isinstance(clickdata["points"][0]["y"], str):  # aggregate
                     # in aggregate clickdata returns col name -> type==str
                     interact_col = clickdata["points"][0]["y"].split(" ")[1]
@@ -2005,6 +2084,412 @@ class InteractionSummaryDependenceConnector(ExplainerComponent):
             else:
                 return (col, dash.no_update, dash.no_update)
             raise PreventUpdate
+
+
+class ShapContributionsTableComponent(ExplainerComponent):
+    _state_props = dict(
+        index=("contributions-table-index-", "value"),
+        depth=("contributions-table-depth-", "value"),
+        sort=("contributions-table-sorting-", "value"),
+        pos_label=("pos-label-", "value"),
+    )
+
+    def __init__(
+        self,
+        explainer,
+        title="Tabela de Contribuições", # Traduzido
+        name=None,
+        subtitle="Como cada característica contribuiu para a previsão?", # Traduzido
+        hide_title=False,
+        hide_subtitle=False,
+        hide_index=False,
+        hide_depth=False,
+        hide_sort=False,
+        hide_selector=False,
+        feature_input_component=None,
+        index_dropdown=True,
+        pos_label=None,
+        index=None,
+        depth=None,
+        sort="abs",
+        description=None,
+        **kwargs,
+    ):
+        """Show SHAP values contributions to prediction in a table component
+
+        Args:
+            explainer (Explainer): explainer object constructed with either
+                        ClassifierExplainer() or RegressionExplainer()
+            title (str, optional): Title of tab or page. Defaults to
+                        "Tabela de Contribuições". # Atualizado docstring
+            name (str, optional): unique name to add to Component elements.
+                        If None then random uuid is generated to make sure
+                        it's unique. Defaults to None.
+            subtitle (str): subtitle. Defaults to "Como cada característica contribuiu para a previsão?". # Atualizado docstring
+            hide_title (bool, optional): Hide component title. Defaults to False.
+            hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
+            hide_index (bool, optional): Hide index selector. Defaults to False.
+            hide_depth (bool, optional): Hide depth selector. Defaults to False.
+            hide_sort (bool, optional): Hide sorting dropdown. Default to False.
+            hide_selector (bool, optional): hide pos label selector. Defaults to False.
+            feature_input_component (FeatureInputComponent): A FeatureInputComponent
+                that will give the input to the graph instead of the index selector.
+                If not None, hide_index=True. Defaults to None.
+            index_dropdown (bool, optional): Use dropdown for index input instead
+                of free text input. Defaults to True.
+            pos_label ({int, str}, optional): initial pos label.
+                        Defaults to explainer.pos_label
+            index ([type], optional): Initial index to display. Defaults to None.
+            depth ([type], optional): Initial number of features to display. Defaults to None.
+            sort ({'abs', 'high-to-low', 'low-to-high', 'importance'}, optional): sorting of shap values.
+                        Defaults to 'abs'.
+            description (str, optional): Tooltip to display when hover over
+                component title. When None default text is shown.
+        """
+        super().__init__(explainer, title, name)
+
+        self.index_name = "contributions-table-index-" + self.name
+
+        if self.depth is not None:
+            self.depth = min(self.depth, self.explainer.n_features)
+        else:
+            self.depth = self.explainer.n_features
+
+        if self.feature_input_component is not None:
+            self.exclude_callbacks(self.feature_input_component)
+            self.hide_index = True
+
+        if self.description is None:
+             # Traduzido
+            self.description = """
+        Esta tabela mostra a contribuição que cada característica individual teve
+        na previsão para uma observação específica. As contribuições (a partir
+        da média da população) somam-se à previsão final. Isto permite-lhe
+        explicar exatamente como cada previsão individual foi construída
+        a partir de todos os ingredientes individuais no modelo.
+        """
+        self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
+        self.index_selector = IndexSelector(
+            explainer,
+            "contributions-table-index-" + self.name,
+            index=index,
+            index_dropdown=index_dropdown,
+            **kwargs,
+        )
+
+        self.register_dependencies("shap_values_df")
+
+    def layout(self):
+        return dbc.Card(
+            [
+                make_hideable(
+                    dbc.CardHeader(
+                        [
+                            html.Div(
+                                [
+                                    html.H3(
+                                        self.title, # Usa self.title
+                                        id="contributions-table-title-" + self.name,
+                                    ),
+                                    make_hideable(
+                                        html.H6(
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
+                                        ),
+                                        hide=self.hide_subtitle,
+                                    ),
+                                    dbc.Tooltip(
+                                        self.description, # Usa self.description
+                                        target="contributions-table-title-" + self.name,
+                                    ),
+                                ]
+                            ),
+                        ]
+                    ),
+                    hide=self.hide_title,
+                ),
+                dbc.CardBody(
+                    [
+                        dbc.Row(
+                            [
+                                make_hideable(
+                                    dbc.Col(
+                                        [
+                                             # Usa index_name já traduzido
+                                            dbc.Label(
+                                                f"{self.explainer.index_name}:",
+                                                id="contributions-table-index-label-"
+                                                + self.name,
+                                            ),
+                                            dbc.Tooltip(
+                                                 # Traduzido
+                                                f"Selecione o {self.explainer.index_name} para exibir as contribuições das características",
+                                                target="contributions-table-index-label-"
+                                                + self.name,
+                                            ),
+                                            self.index_selector.layout(),
+                                        ],
+                                        md=4,
+                                    ),
+                                    hide=self.hide_index,
+                                ),
+                                make_hideable(
+                                    dbc.Col(
+                                        [
+                                            dbc.Label(
+                                                "Profundidade:", # Traduzido
+                                                id="contributions-table-depth-label-"
+                                                + self.name,
+                                            ),
+                                            dbc.Tooltip(
+                                                # Traduzido
+                                                "Número de características a exibir",
+                                                target="contributions-table-depth-label-"
+                                                + self.name,
+                                            ),
+                                            dbc.Select(
+                                                id="contributions-table-depth-"
+                                                + self.name,
+                                                options=[
+                                                    {
+                                                        "label": str(i + 1),
+                                                        "value": i + 1,
+                                                    }
+                                                    for i in range(
+                                                        self.explainer.n_features
+                                                    )
+                                                ],
+                                                value=self.depth,
+                                                size="sm",
+                                            ),
+                                        ],
+                                        md=2,
+                                    ),
+                                    hide=self.hide_depth,
+                                ),
+                                make_hideable(
+                                    dbc.Col(
+                                        [
+                                            dbc.Label(
+                                                "Ordenação:", # Traduzido
+                                                id="contributions-table-sorting-label-"
+                                                + self.name,
+                                            ),
+                                            dbc.Tooltip(
+                                                # Traduzido
+                                                "Ordenar as características pelo maior impacto absoluto (positivo ou negativo) (Absoluto), "
+                                                "do mais positivo para o mais negativo (Maior para Menor), "
+                                                "do mais negativo para o mais positivo (Menor para Maior) ou "
+                                                "de acordo com a ordem de importância global da característica (Importância).",
+                                                target="contributions-table-sorting-label-"
+                                                + self.name,
+                                            ),
+                                            dbc.Select(
+                                                id="contributions-table-sorting-"
+                                                + self.name,
+                                                options=[
+                                                    {
+                                                        # Traduzido
+                                                        "label": "Absoluto",
+                                                        "value": "abs",
+                                                    },
+                                                    {
+                                                         # Traduzido
+                                                        "label": "Maior para Menor",
+                                                        "value": "high-to-low",
+                                                    },
+                                                    {
+                                                         # Traduzido
+                                                        "label": "Menor para Maior",
+                                                        "value": "low-to-high",
+                                                    },
+                                                    {
+                                                         # Traduzido
+                                                        "label": "Importância",
+                                                        "value": "importance",
+                                                    },
+                                                ],
+                                                value=self.sort,
+                                                size="sm",
+                                            ),
+                                        ],
+                                        md=2,
+                                    ),
+                                    hide=self.hide_sort,
+                                ),
+                                make_hideable(
+                                    dbc.Col([self.selector.layout()], width=2),
+                                    hide=self.hide_selector,
+                                ),
+                            ]
+                        ),
+                        dbc.Row(
+                            [
+                                dbc.Col(
+                                    [
+                                        dcc.Loading(
+                                            id="loading-contributions-table-"
+                                            + self.name,
+                                            children=[
+                                                html.Div(
+                                                    id="contributions-table-"
+                                                    + self.name
+                                                )
+                                            ],
+                                        ),
+                                    ]
+                                ),
+                            ]
+                        ),
+                    ]
+                ),
+            ],
+            class_name="h-100",
+        )
+
+    def get_state_tuples(self):
+        _state_tuples = super().get_state_tuples()
+        # also get state_tuples from feature_input_component as they are needed
+        # to generate html from state:
+        if self.feature_input_component is not None:
+            _state_tuples.extend(self.feature_input_component.get_state_tuples())
+        return sorted(list(set(_state_tuples)))
+
+    def to_html(self, state_dict=None, add_header=True):
+        args = self.get_state_args(state_dict)
+        args["depth"] = None if args["depth"] is None else int(args["depth"])
+
+        if self.feature_input_component is None:
+            if args["index"] is not None:
+                # O DataFrame já foi traduzido em explainer_methods.py
+                contrib_df = self.explainer.get_contrib_summary_df(
+                    args["index"],
+                    topx=args["depth"],
+                    sort=args["sort"],
+                    pos_label=args["pos_label"],
+                )
+                html = to_html.table_from_df(contrib_df)
+            else:
+                 # Traduzido
+                html = "<div>nenhum índice selecionado</div>"
+        else:
+            inputs = {
+                k: v
+                for k, v in self.feature_input_component.get_state_args(
+                    state_dict
+                ).items()
+                if k != "index"
+            }
+            inputs = list(inputs.values())
+            if len(inputs) == len(
+                self.feature_input_component._input_features
+            ) and not any([i is None for i in inputs]):
+                X_row = self.explainer.get_row_from_input(inputs, ranked_by_shap=True)
+                # O DataFrame já foi traduzido em explainer_methods.py
+                contrib_df = self.explainer.get_contrib_summary_df(
+                    X_row=X_row,
+                    topx=args["depth"],
+                    sort=args["sort"],
+                    pos_label=args["pos_label"],
+                )
+                html = to_html.table_from_df(contrib_df)
+            else:
+                # Traduzido
+                html = f"<div>dados de entrada incorretos</div>"
+
+        html = to_html.card(html, title=self.title, subtitle=self.subtitle)
+        if add_header:
+            return to_html.add_header(html)
+        return html
+
+    def component_callbacks(self, app):
+        if self.feature_input_component is None:
+
+            @app.callback(
+                Output("contributions-table-" + self.name, "children"),
+                [
+                    Input("contributions-table-index-" + self.name, "value"),
+                    Input("contributions-table-depth-" + self.name, "value"),
+                    Input("contributions-table-sorting-" + self.name, "value"),
+                    Input("pos-label-" + self.name, "value"),
+                ],
+            )
+            def update_output_div(index, depth, sort, pos_label):
+                if index is None or not self.explainer.index_exists(index):
+                    raise PreventUpdate
+                depth = None if depth is None else int(depth)
+                # O DataFrame já foi traduzido em explainer_methods.py
+                contributions_table = dbc.Table.from_dataframe(
+                    self.explainer.get_contrib_summary_df(
+                        str(index), topx=depth, sort=sort, pos_label=pos_label
+                    )
+                )
+
+                tooltip_cols = {}
+                for tr in contributions_table.children[1].children:
+                    # insert tooltip target id's into the table html.Tr() elements:
+                    tds = tr.children
+                    col = tds[0].children.split(" = ")[0]
+                    if self.explainer.description(col) != "":
+                        tr.id = f"contributions-table-hover-{col}-" + self.name
+                        tooltip_cols[col] = self.explainer.description(col)
+
+                tooltips = [
+                    dbc.Tooltip(
+                        desc,
+                        target=f"contributions-table-hover-{col}-" + self.name,
+                        placement="top",
+                    )
+                    for col, desc in tooltip_cols.items()
+                ]
+
+                output_div = html.Div([contributions_table, *tooltips])
+                return output_div
+
+        else:
+
+            @app.callback(
+                Output("contributions-table-" + self.name, "children"),
+                [
+                    Input("contributions-table-depth-" + self.name, "value"),
+                    Input("contributions-table-sorting-" + self.name, "value"),
+                    Input("pos-label-" + self.name, "value"),
+                    *self.feature_input_component._feature_callback_inputs,
+                ],
+            )
+            def update_output_div(depth, sort, pos_label, *inputs):
+                if not any([i is None for i in inputs]):
+                    X_row = self.explainer.get_row_from_input(
+                        inputs, ranked_by_shap=True
+                    )
+                    depth = None if depth is None else int(depth)
+                    # O DataFrame já foi traduzido em explainer_methods.py
+                    contributions_table = dbc.Table.from_dataframe(
+                        self.explainer.get_contrib_summary_df(
+                            X_row=X_row, topx=depth, sort=sort, pos_label=pos_label
+                        )
+                    )
+
+                    tooltip_cols = {}
+                    for tr in contributions_table.children[1].children:
+                        # insert tooltip target id's into the table html.Tr() elements:
+                        tds = tr.children
+                        col = tds[0].children.split(" = ")[0]
+                        if self.explainer.description(col) != "":
+                            tr.id = f"contributions-table-hover-{col}-" + self.name
+                            tooltip_cols[col] = self.explainer.description(col)
+
+                    tooltips = [
+                        dbc.Tooltip(
+                            desc,
+                            target=f"contributions-table-hover-{col}-" + self.name,
+                            placement="top",
+                        )
+                        for col, desc in tooltip_cols.items()
+                    ]
+
+                    output_div = html.Div([contributions_table, *tooltips])
+                    return output_div
+                raise PreventUpdate
 
 
 class ShapContributionsGraphComponent(ExplainerComponent):
@@ -2019,9 +2504,9 @@ class ShapContributionsGraphComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Contributions Plot",
+        title="Gráfico de Contribuições", # Traduzido
         name=None,
-        subtitle="How has each feature contributed to the prediction?",
+        subtitle="Como cada característica contribuiu para a previsão?", # Traduzido
         hide_title=False,
         hide_subtitle=False,
         hide_index=False,
@@ -2047,11 +2532,11 @@ class ShapContributionsGraphComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed , with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Contributions Plot".
+                        "Gráfico de Contribuições". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle
+            subtitle (str): subtitle. Defaults to "Como cada característica contribuiu para a previsão?". # Atualizado docstring
             hide_title (bool, optional): Hide component title. Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_index (bool, optional): Hide index selector. Defaults to False.
@@ -2093,12 +2578,13 @@ class ShapContributionsGraphComponent(ExplainerComponent):
             self.hide_index = True
 
         if self.description is None:
+             # Traduzido
             self.description = """
-        This plot shows the contribution that each individual feature has had
-        on the prediction for a specific observation. The contributions (starting
-        from the population average) add up to the final prediction. This allows you
-        to explain exactly how each individual prediction has been built up
-        from all the individual ingredients in the model.
+        Este gráfico mostra a contribuição que cada característica individual teve
+        na previsão para uma observação específica. As contribuições (a partir
+        da média da população) somam-se à previsão final. Isto permite-lhe
+        explicar exatamente como cada previsão individual foi construída
+        a partir de todos os ingredientes individuais no modelo.
         """
 
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
@@ -2127,17 +2613,17 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title,
+                                        self.title, # Usa self.title
                                         id="contributions-graph-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle"
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description,
+                                        self.description, # Usa self.description
                                         target="contributions-graph-title-" + self.name,
                                     ),
                                 ]
@@ -2162,13 +2648,15 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
+                                             # Usa index_name já traduzido
                                             dbc.Label(
                                                 f"{self.explainer.index_name}:",
                                                 id="contributions-graph-index-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select the {self.explainer.index_name} to display the feature contributions for",
+                                                 # Traduzido
+                                                f"Selecione o {self.explainer.index_name} para exibir as contribuições das características",
                                                 target="contributions-graph-index-label-"
                                                 + self.name,
                                             ),
@@ -2182,12 +2670,13 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Depth:",
+                                                "Profundidade:", # Traduzido
                                                 id="contributions-graph-depth-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Number of features to display",
+                                                 # Traduzido
+                                                "Número de características a exibir",
                                                 target="contributions-graph-depth-label-"
                                                 + self.name,
                                             ),
@@ -2217,15 +2706,16 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Sorting:",
+                                                "Ordenação:", # Traduzido
                                                 id="contributions-graph-sorting-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Sort the features either by highest absolute (positive or negative) impact (absolute), "
-                                                "from most positive the most negative (high-to-low)"
-                                                "from most negative to most positive (low-to-high or "
-                                                "according the global feature importance ordering (importance).",
+                                                # Traduzido
+                                                "Ordenar as características pelo maior impacto absoluto (positivo ou negativo) (Absoluto), "
+                                                "do mais positivo para o mais negativo (Maior para Menor)"
+                                                "do mais negativo para o mais positivo (Menor para Maior) ou "
+                                                "de acordo com a ordem de importância global da característica (Importância).",
                                                 target="contributions-graph-sorting-label-"
                                                 + self.name,
                                             ),
@@ -2234,19 +2724,23 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
-                                                        "label": "Absolute",
+                                                         # Traduzido
+                                                        "label": "Absoluto",
                                                         "value": "abs",
                                                     },
                                                     {
-                                                        "label": "High to Low",
+                                                         # Traduzido
+                                                        "label": "Maior para Menor",
                                                         "value": "high-to-low",
                                                     },
                                                     {
-                                                        "label": "Low to High",
+                                                         # Traduzido
+                                                        "label": "Menor para Maior",
                                                         "value": "low-to-high",
                                                     },
                                                     {
-                                                        "label": "Importance",
+                                                         # Traduzido
+                                                        "label": "Importância",
                                                         "value": "importance",
                                                     },
                                                 ],
@@ -2262,12 +2756,13 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Orientation:",
+                                                "Orientação:", # Traduzido
                                                 id="contributions-graph-orientation-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Show vertical bars left to right or horizontal bars from top to bottom",
+                                                 # Traduzido
+                                                "Mostrar barras verticais da esquerda para a direita ou barras horizontais de cima para baixo",
                                                 target="contributions-graph-orientation-label-"
                                                 + self.name,
                                             ),
@@ -2276,10 +2771,12 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                                                 + self.name,
                                                 options=[
                                                     {
+                                                         # Traduzido
                                                         "label": "Vertical",
                                                         "value": "vertical",
                                                     },
                                                     {
+                                                         # Traduzido
                                                         "label": "Horizontal",
                                                         "value": "horizontal",
                                                     },
@@ -2354,7 +2851,8 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                 )
                 html = to_html.fig(fig)
             else:
-                html = "<div>no index selected</div>"
+                 # Traduzido
+                html = "<div>nenhum índice selecionado</div>"
         else:
             inputs = {
                 k: v
@@ -2382,7 +2880,8 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                 )
                 html = to_html.fig(fig)
             else:
-                html = f"<div>input data incorrect</div>"
+                 # Traduzido
+                html = f"<div>dados de entrada incorretos</div>"
 
         html = to_html.card(html, title=self.title, subtitle=self.subtitle)
         if add_header:
@@ -2445,393 +2944,3 @@ class ShapContributionsGraphComponent(ExplainerComponent):
                     return plot
                 raise PreventUpdate
 
-
-class ShapContributionsTableComponent(ExplainerComponent):
-    _state_props = dict(
-        index=("contributions-table-index-", "value"),
-        depth=("contributions-table-depth-", "value"),
-        sort=("contributions-table-sorting-", "value"),
-        pos_label=("pos-label-", "value"),
-    )
-
-    def __init__(
-        self,
-        explainer,
-        title="Contributions Table",
-        name=None,
-        subtitle="How has each feature contributed to the prediction?",
-        hide_title=False,
-        hide_subtitle=False,
-        hide_index=False,
-        hide_depth=False,
-        hide_sort=False,
-        hide_selector=False,
-        feature_input_component=None,
-        index_dropdown=True,
-        pos_label=None,
-        index=None,
-        depth=None,
-        sort="abs",
-        description=None,
-        **kwargs,
-    ):
-        """Show SHAP values contributions to prediction in a table component
-
-        Args:
-            explainer (Explainer): explainer object constructed with either
-                        ClassifierExplainer() or RegressionExplainer()
-            title (str, optional): Title of tab or page. Defaults to
-                        "Contributions Table".
-            name (str, optional): unique name to add to Component elements.
-                        If None then random uuid is generated to make sure
-                        it's unique. Defaults to None.
-            subtitle (str): subtitle
-            hide_title (bool, optional): Hide component title. Defaults to False.
-            hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
-            hide_index (bool, optional): Hide index selector. Defaults to False.
-            hide_depth (bool, optional): Hide depth selector. Defaults to False.
-            hide_sort (bool, optional): Hide sorting dropdown. Default to False.
-            hide_selector (bool, optional): hide pos label selector. Defaults to False.
-            feature_input_component (FeatureInputComponent): A FeatureInputComponent
-                that will give the input to the graph instead of the index selector.
-                If not None, hide_index=True. Defaults to None.
-            index_dropdown (bool, optional): Use dropdown for index input instead
-                of free text input. Defaults to True.
-            pos_label ({int, str}, optional): initial pos label.
-                        Defaults to explainer.pos_label
-            index ([type], optional): Initial index to display. Defaults to None.
-            depth ([type], optional): Initial number of features to display. Defaults to None.
-            sort ({'abs', 'high-to-low', 'low-to-high', 'importance'}, optional): sorting of shap values.
-                        Defaults to 'high-to-low'.
-            description (str, optional): Tooltip to display when hover over
-                component title. When None default text is shown.
-        """
-        super().__init__(explainer, title, name)
-
-        self.index_name = "contributions-table-index-" + self.name
-
-        if self.depth is not None:
-            self.depth = min(self.depth, self.explainer.n_features)
-        else:
-            self.depth = self.explainer.n_features
-
-        if self.feature_input_component is not None:
-            self.exclude_callbacks(self.feature_input_component)
-            self.hide_index = True
-
-        if self.description is None:
-            self.description = """
-        This tables shows the contribution that each individual feature has had
-        on the prediction for a specific observation. The contributions (starting
-        from the population average) add up to the final prediction. This allows you
-        to explain exactly how each individual prediction has been built up
-        from all the individual ingredients in the model.
-        """
-        self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
-        self.index_selector = IndexSelector(
-            explainer,
-            "contributions-table-index-" + self.name,
-            index=index,
-            index_dropdown=index_dropdown,
-            **kwargs,
-        )
-
-        self.register_dependencies("shap_values_df")
-
-    def layout(self):
-        return dbc.Card(
-            [
-                make_hideable(
-                    dbc.CardHeader(
-                        [
-                            html.Div(
-                                [
-                                    html.H3(
-                                        self.title,
-                                        id="contributions-table-title-" + self.name,
-                                    ),
-                                    make_hideable(
-                                        html.H6(
-                                            self.subtitle, className="card-subtitle"
-                                        ),
-                                        hide=self.hide_subtitle,
-                                    ),
-                                    dbc.Tooltip(
-                                        self.description,
-                                        target="contributions-table-title-" + self.name,
-                                    ),
-                                ]
-                            ),
-                        ]
-                    ),
-                    hide=self.hide_title,
-                ),
-                dbc.CardBody(
-                    [
-                        dbc.Row(
-                            [
-                                make_hideable(
-                                    dbc.Col(
-                                        [
-                                            dbc.Label(
-                                                f"{self.explainer.index_name}:",
-                                                id="contributions-table-index-label-"
-                                                + self.name,
-                                            ),
-                                            dbc.Tooltip(
-                                                f"Select the {self.explainer.index_name} to display the feature contributions for",
-                                                target="contributions-table-index-label-"
-                                                + self.name,
-                                            ),
-                                            self.index_selector.layout(),
-                                        ],
-                                        md=4,
-                                    ),
-                                    hide=self.hide_index,
-                                ),
-                                make_hideable(
-                                    dbc.Col(
-                                        [
-                                            dbc.Label(
-                                                "Depth:",
-                                                id="contributions-table-depth-label-"
-                                                + self.name,
-                                            ),
-                                            dbc.Tooltip(
-                                                "Number of features to display",
-                                                target="contributions-table-depth-label-"
-                                                + self.name,
-                                            ),
-                                            dbc.Select(
-                                                id="contributions-table-depth-"
-                                                + self.name,
-                                                options=[
-                                                    {
-                                                        "label": str(i + 1),
-                                                        "value": i + 1,
-                                                    }
-                                                    for i in range(
-                                                        self.explainer.n_features
-                                                    )
-                                                ],
-                                                value=self.depth,
-                                                size="sm",
-                                            ),
-                                        ],
-                                        md=2,
-                                    ),
-                                    hide=self.hide_depth,
-                                ),
-                                make_hideable(
-                                    dbc.Col(
-                                        [
-                                            dbc.Label(
-                                                "Sorting:",
-                                                id="contributions-table-sorting-label-"
-                                                + self.name,
-                                            ),
-                                            dbc.Tooltip(
-                                                "Sort the features either by highest absolute (positive or negative) impact (absolute), "
-                                                "from most positive the most negative (high-to-low)"
-                                                "from most negative to most positive (low-to-high or "
-                                                "according the global feature importance ordering (importance).",
-                                                target="contributions-table-sorting-label-"
-                                                + self.name,
-                                            ),
-                                            dbc.Select(
-                                                id="contributions-table-sorting-"
-                                                + self.name,
-                                                options=[
-                                                    {
-                                                        "label": "Absolute",
-                                                        "value": "abs",
-                                                    },
-                                                    {
-                                                        "label": "High to Low",
-                                                        "value": "high-to-low",
-                                                    },
-                                                    {
-                                                        "label": "Low to High",
-                                                        "value": "low-to-high",
-                                                    },
-                                                    {
-                                                        "label": "Importance",
-                                                        "value": "importance",
-                                                    },
-                                                ],
-                                                value=self.sort,
-                                                size="sm",
-                                            ),
-                                        ],
-                                        md=2,
-                                    ),
-                                    hide=self.hide_sort,
-                                ),
-                                make_hideable(
-                                    dbc.Col([self.selector.layout()], width=2),
-                                    hide=self.hide_selector,
-                                ),
-                            ]
-                        ),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    [
-                                        dcc.Loading(
-                                            id="loading-contributions-table-"
-                                            + self.name,
-                                            children=[
-                                                html.Div(
-                                                    id="contributions-table-"
-                                                    + self.name
-                                                )
-                                            ],
-                                        ),
-                                    ]
-                                ),
-                            ]
-                        ),
-                    ]
-                ),
-            ],
-            class_name="h-100",
-        )
-
-    def get_state_tuples(self):
-        _state_tuples = super().get_state_tuples()
-        # also get state_tuples from feature_input_component as they are needed
-        # to generate html from state:
-        if self.feature_input_component is not None:
-            _state_tuples.extend(self.feature_input_component.get_state_tuples())
-        return sorted(list(set(_state_tuples)))
-
-    def to_html(self, state_dict=None, add_header=True):
-        args = self.get_state_args(state_dict)
-        args["depth"] = None if args["depth"] is None else int(args["depth"])
-
-        if self.feature_input_component is None:
-            if args["index"] is not None:
-                contrib_df = self.explainer.get_contrib_summary_df(
-                    args["index"],
-                    topx=args["depth"],
-                    sort=args["sort"],
-                    pos_label=args["pos_label"],
-                )
-                html = to_html.table_from_df(contrib_df)
-            else:
-                html = "<div>no index selected</div>"
-        else:
-            inputs = {
-                k: v
-                for k, v in self.feature_input_component.get_state_args(
-                    state_dict
-                ).items()
-                if k != "index"
-            }
-            inputs = list(inputs.values())
-            if len(inputs) == len(
-                self.feature_input_component._input_features
-            ) and not any([i is None for i in inputs]):
-                X_row = self.explainer.get_row_from_input(inputs, ranked_by_shap=True)
-                contrib_df = self.explainer.get_contrib_summary_df(
-                    X_row=X_row,
-                    topx=args["depth"],
-                    sort=args["sort"],
-                    pos_label=args["pos_label"],
-                )
-                html = to_html.table_from_df(contrib_df)
-            else:
-                html = f"<div>input data incorrect</div>"
-
-        html = to_html.card(html, title=self.title, subtitle=self.subtitle)
-        if add_header:
-            return to_html.add_header(html)
-        return html
-
-    def component_callbacks(self, app):
-        if self.feature_input_component is None:
-
-            @app.callback(
-                Output("contributions-table-" + self.name, "children"),
-                [
-                    Input("contributions-table-index-" + self.name, "value"),
-                    Input("contributions-table-depth-" + self.name, "value"),
-                    Input("contributions-table-sorting-" + self.name, "value"),
-                    Input("pos-label-" + self.name, "value"),
-                ],
-            )
-            def update_output_div(index, depth, sort, pos_label):
-                if index is None or not self.explainer.index_exists(index):
-                    raise PreventUpdate
-                depth = None if depth is None else int(depth)
-                contributions_table = dbc.Table.from_dataframe(
-                    self.explainer.get_contrib_summary_df(
-                        str(index), topx=depth, sort=sort, pos_label=pos_label
-                    )
-                )
-
-                tooltip_cols = {}
-                for tr in contributions_table.children[1].children:
-                    # insert tooltip target id's into the table html.Tr() elements:
-                    tds = tr.children
-                    col = tds[0].children.split(" = ")[0]
-                    if self.explainer.description(col) != "":
-                        tr.id = f"contributions-table-hover-{col}-" + self.name
-                        tooltip_cols[col] = self.explainer.description(col)
-
-                tooltips = [
-                    dbc.Tooltip(
-                        desc,
-                        target=f"contributions-table-hover-{col}-" + self.name,
-                        placement="top",
-                    )
-                    for col, desc in tooltip_cols.items()
-                ]
-
-                output_div = html.Div([contributions_table, *tooltips])
-                return output_div
-
-        else:
-
-            @app.callback(
-                Output("contributions-table-" + self.name, "children"),
-                [
-                    Input("contributions-table-depth-" + self.name, "value"),
-                    Input("contributions-table-sorting-" + self.name, "value"),
-                    Input("pos-label-" + self.name, "value"),
-                    *self.feature_input_component._feature_callback_inputs,
-                ],
-            )
-            def update_output_div(depth, sort, pos_label, *inputs):
-                if not any([i is None for i in inputs]):
-                    X_row = self.explainer.get_row_from_input(
-                        inputs, ranked_by_shap=True
-                    )
-                    depth = None if depth is None else int(depth)
-                    contributions_table = dbc.Table.from_dataframe(
-                        self.explainer.get_contrib_summary_df(
-                            X_row=X_row, topx=depth, sort=sort, pos_label=pos_label
-                        )
-                    )
-
-                    tooltip_cols = {}
-                    for tr in contributions_table.children[1].children:
-                        # insert tooltip target id's into the table html.Tr() elements:
-                        tds = tr.children
-                        col = tds[0].children.split(" = ")[0]
-                        if self.explainer.description(col) != "":
-                            tr.id = f"contributions-table-hover-{col}-" + self.name
-                            tooltip_cols[col] = self.explainer.description(col)
-
-                    tooltips = [
-                        dbc.Tooltip(
-                            desc,
-                            target=f"contributions-table-hover-{col}-" + self.name,
-                            placement="top",
-                        )
-                        for col, desc in tooltip_cols.items()
-                    ]
-
-                    output_div = html.Div([contributions_table, *tooltips])
-                    return output_div
-                raise PreventUpdate

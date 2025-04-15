@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 __all__ = [
     "CutoffPercentileComponent",
     "PosLabelConnector",
@@ -13,6 +15,7 @@ from dash import html, dcc, Input, Output, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
+# Presumo que os imports abaixo estejam corretos no contexto do projeto original
 from ..dashboard_methods import *
 
 
@@ -20,7 +23,7 @@ class CutoffPercentileComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Global cutoff",
+        title="Cutoff Global", # Traduzido
         name=None,
         hide_title=False,
         hide_cutoff=False,
@@ -44,7 +47,7 @@ class CutoffPercentileComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Global Cutoff".
+                        "Cutoff Global". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -66,13 +69,14 @@ class CutoffPercentileComponent(ExplainerComponent):
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
 
         if self.description is None:
+            # Traduzido
             self.description = """
-        Select a model cutoff such that all predicted probabilities higher than
-        the cutoff will be labeled positive, and all predicted probabilities 
-        lower than the cutoff will be labeled negative. You can also set
-        the cutoff as a percenntile of all observations. Setting the cutoff
-        here will automatically set the cutoff in multiple other connected
-        component. 
+        Selecione um cutoff do modelo tal que todas as probabilidades previstas
+        acima do cutoff sejam rotuladas como positivas, e todas as probabilidades
+        previstas abaixo do cutoff sejam rotuladas como negativas. Também pode definir
+        o cutoff como um percentil de todas as observações. Definir o cutoff
+        aqui irá definir automaticamente o cutoff em múltiplos outros componentes
+        conectados.
         """
         self.register_dependencies(["preds", "pred_percentiles"])
 
@@ -83,12 +87,12 @@ class CutoffPercentileComponent(ExplainerComponent):
                     dbc.CardHeader(
                         [
                             html.H3(
-                                self.title,
+                                self.title, # Usa self.title
                                 className="card-title",
                                 id="cutoffconnector-title-" + self.name,
                             ),
                             dbc.Tooltip(
-                                self.description,
+                                self.description, # Usa self.description
                                 target="cutoffconnector-title-" + self.name,
                             ),
                         ]
@@ -109,7 +113,8 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                             html.Div(
                                                                 [
                                                                     html.Label(
-                                                                        "Cutoff prediction probability:"
+                                                                        # Traduzido
+                                                                        "Cutoff da probabilidade de previsão:"
                                                                     ),
                                                                     dcc.Slider(
                                                                         id="cutoffconnector-cutoff-"
@@ -138,7 +143,8 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                                 + self.name,
                                                             ),
                                                             dbc.Tooltip(
-                                                                f"Scores above this cutoff will be labeled positive",
+                                                                # Traduzido
+                                                                f"Pontuações acima deste cutoff serão rotuladas como positivas",
                                                                 target="cutoffconnector-cutoff-div-"
                                                                 + self.name,
                                                                 placement="bottom",
@@ -157,7 +163,8 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                             html.Div(
                                                                 [
                                                                     html.Label(
-                                                                        "Cutoff percentile of samples:"
+                                                                        # Traduzido
+                                                                        "Percentil de cutoff das amostras:"
                                                                     ),
                                                                     dcc.Slider(
                                                                         id="cutoffconnector-percentile-"
@@ -186,7 +193,8 @@ class CutoffPercentileComponent(ExplainerComponent):
                                                                 + self.name,
                                                             ),
                                                             dbc.Tooltip(
-                                                                f"example: if set to percentile=0.9: label the top 10% highest scores as positive, the rest negative.",
+                                                                # Traduzido
+                                                                f"exemplo: se definir para percentil=0.9: rotula as 10% maiores pontuações como positivas, o resto negativas.",
                                                                 target="cutoffconnector-percentile-div-"
                                                                 + self.name,
                                                                 placement="bottom",
@@ -248,9 +256,10 @@ class PosLabelConnector(ExplainerComponent):
             return input_pos_label
         else:
             raise ValueError(
-                "input_pos_label should either be a str, "
-                "PosLabelSelector or an instance with a .selector property"
-                " that is a PosLabelSelector!"
+                 # Traduzido
+                "input_pos_label deve ser str, "
+                "PosLabelSelector ou uma instância com propriedade .selector"
+                " que seja um PosLabelSelector!"
             )
 
     def _get_pos_labels(self, output_pos_labels):
@@ -258,7 +267,8 @@ class PosLabelConnector(ExplainerComponent):
             if isinstance(o, PosLabelSelector):
                 return ["pos-label-" + o.name]
             elif isinstance(o, str):
-                return [str]
+                # Correção: deveria retornar [o] se for string, não [str]
+                return [o]
             elif hasattr(o, "pos_labels"):
                 return o.pos_labels
             return []
@@ -315,10 +325,11 @@ class CutoffConnector(ExplainerComponent):
                 return o
             elif isinstance(o, ExplainerComponent):
                 if not hasattr(o, "cutoff_name"):
-                    raise ValueError(f"{o} does not have an .cutoff_name property!")
+                    raise ValueError(f"{o} não tem uma propriedade .cutoff_name!") # Traduzido
                 return o.cutoff_name
             raise ValueError(
-                f"{o} is neither str nor an ExplainerComponent with an .cutoff_name property"
+                 # Traduzido
+                f"{o} não é nem str nem um ExplainerComponent com uma propriedade .cutoff_name"
             )
 
         if hasattr(cutoffs, "__iter__"):
@@ -369,10 +380,11 @@ class IndexConnector(ExplainerComponent):
                 return o
             elif isinstance(o, ExplainerComponent):
                 if not hasattr(o, "index_name"):
-                    raise ValueError(f"{o} does not have an .index_name property!")
+                    raise ValueError(f"{o} não tem uma propriedade .index_name!") # Traduzido
                 return o.index_name
             raise ValueError(
-                f"{o} is neither str nor an ExplainerComponent with an .index_name property"
+                 # Traduzido
+                f"{o} não é nem str nem um ExplainerComponent com uma propriedade .index_name"
             )
 
         if hasattr(indexes, "__iter__"):
@@ -429,10 +441,11 @@ class HighlightConnector(ExplainerComponent):
                 return o
             elif isinstance(o, ExplainerComponent):
                 if not hasattr(o, "highlight_name"):
-                    raise ValueError(f"{o} does not have an .highlight_name property!")
+                    raise ValueError(f"{o} não tem uma propriedade .highlight_name!") # Traduzido
                 return o.highlight_name
             raise ValueError(
-                f"{o} is neither str nor an ExplainerComponent with an .highlight_name property"
+                 # Traduzido
+                f"{o} não é nem str nem um ExplainerComponent com uma propriedade .highlight_name"
             )
 
         if hasattr(highlights, "__iter__"):
@@ -453,3 +466,4 @@ class HighlightConnector(ExplainerComponent):
         )
         def update_highlights(highlight):
             return tuple(highlight for i in range(len(self.output_highlight_names)))
+        

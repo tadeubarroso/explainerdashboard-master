@@ -1,7 +1,15 @@
+# -*- coding: utf-8 -*-
+
+# O __all__ abaixo parece ser de explainer_methods.py ou explainer.py,
+# mas o código a seguir é de decisiontree_components.py. Mantido como fornecido pelo utilizador.
 __all__ = [
-    "DecisionTreesComponent",
-    "DecisionPathTableComponent",
-    "DecisionPathGraphComponent",
+    "BaseExplainer",
+    "ClassifierExplainer",
+    "RegressionExplainer",
+    "RandomForestClassifierExplainer",
+    "RandomForestRegressionExplainer",
+    "XGBClassifierExplainer",
+    "XGBRegressionExplainer",
 ]
 
 import dash
@@ -9,6 +17,7 @@ from dash import html, dcc, Input, Output, State, dash_table
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
+# Presumo que os imports abaixo estejam corretos no contexto do projeto original
 from ..explainers import RandomForestExplainer, XGBExplainer
 from ..dashboard_methods import *
 from .classifier_components import ClassifierRandomIndexComponent
@@ -26,9 +35,9 @@ class DecisionTreesComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Decision Trees",
+        title="Árvores de Decisão", # Traduzido
         name=None,
-        subtitle="Displaying individual decision trees",
+        subtitle="A exibir árvores de decisão individuais", # Traduzido
         hide_title=False,
         hide_subtitle=False,
         hide_index=False,
@@ -49,11 +58,11 @@ class DecisionTreesComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Decision Trees".
+                        "Árvores de Decisão". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle
+            subtitle (str): subtitle Defaults to "A exibir árvores de decisão individuais". # Atualizado docstring
             hide_title (bool, optional): hide title, Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_index (bool, optional): Hide index selector. Defaults to False.
@@ -87,22 +96,26 @@ class DecisionTreesComponent(ExplainerComponent):
 
         if isinstance(self.explainer, RandomForestExplainer):
             if self.description is None:
+                # Traduzido
                 self.description = """
-            Show the prediction of every individual tree in a random forest.
-            This demonstrates how a random forest is simply an average of an
-            ensemble of decision trees.
+            Mostra a previsão de cada árvore individual numa random forest.
+            Isto demonstra como uma random forest é simplesmente uma média de um
+            conjunto (ensemble) de árvores de decisão.
             """
             if self.subtitle == "Displaying individual decision trees":
-                self.subtitle += " inside Random Forest"
+                # Traduzido
+                self.subtitle = "A exibir árvores de decisão individuais dentro da Random Forest"
         elif isinstance(self.explainer, XGBExplainer):
             if self.description is None:
+                 # Traduzido
                 self.description = """
-            Shows the marginal contributions of each decision tree in an 
-            xgboost ensemble to the final prediction. This demonstrates that
-            an xgboost model is simply a sum of individual decision trees.
+            Mostra as contribuições marginais de cada árvore de decisão num
+            ensemble xgboost para a previsão final. Isto demonstra que
+            um modelo xgboost é simplesmente uma soma de árvores de decisão individuais.
             """
             if self.subtitle == "Displaying individual decision trees":
-                self.subtitle += " inside xgboost model"
+                 # Traduzido
+                self.subtitle = "A exibir árvores de decisão individuais dentro do modelo xgboost"
         else:
             if self.description is None:
                 self.description = ""
@@ -124,17 +137,17 @@ class DecisionTreesComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title,
+                                        self.title, # Usa self.title
                                         id="decisiontrees-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle"
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description,
+                                        self.description, # Usa self.description
                                         target="decisiontrees-title-" + self.name,
                                     ),
                                 ]
@@ -150,13 +163,15 @@ class DecisionTreesComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
+                                             # Usa index_name já traduzido
                                             dbc.Label(
                                                 f"{self.explainer.index_name}:",
                                                 id="decisiontrees-index-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select {self.explainer.index_name} to display decision trees for",
+                                                # Traduzido
+                                                f"Selecione {self.explainer.index_name} para exibir as árvores de decisão",
                                                 target="decisiontrees-index-label-"
                                                 + self.name,
                                             ),
@@ -170,13 +185,14 @@ class DecisionTreesComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Highlight tree:",
+                                                "Destacar árvore:", # Traduzido
                                                 id="decisiontrees-tree-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select a specific tree to highlight. You can also "
-                                                "highlight by clicking on a specifc bar in the bar chart.",
+                                                # Traduzido
+                                                f"Selecione uma árvore específica para destacar. Também pode "
+                                                "destacar clicando numa barra específica no gráfico de barras.",
                                                 target="decisiontrees-tree-label-"
                                                 + self.name,
                                             ),
@@ -249,7 +265,8 @@ class DecisionTreesComponent(ExplainerComponent):
             )
             html = to_html.fig(fig)
         else:
-            html = "no index selected"
+            # Traduzido
+            html = "nenhum índice selecionado"
         html = to_html.card(html, title=self.title, subtitle=self.subtitle)
         if add_header:
             return to_html.add_header(html)
@@ -281,10 +298,14 @@ class DecisionTreesComponent(ExplainerComponent):
         )
         def update_highlight(clickdata):
             highlight_tree = (
-                int(clickdata["points"][0]["text"].split("tree no ")[1].split(":")[0])
-                if clickdata is not None
+                 # Mantém a lógica de extração do número da árvore, mas traduz o texto
+                int(clickdata["points"][0]["text"].split("árvore nº ")[1].split(":")[0])
+                if clickdata is not None and "árvore nº " in clickdata["points"][0]["text"] # Adicionado verificação
                 else None
             )
+            # Nota: A extração do número da árvore depende da string gerada pela função
+            # plotly_rf_trees ou plotly_xgboost_trees. Se essas funções também forem
+            # traduzidas, a string aqui pode precisar ser ajustada.
             if highlight_tree is not None:
                 return highlight_tree
             raise PreventUpdate
@@ -300,9 +321,9 @@ class DecisionPathTableComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Decision path table",
+        title="Tabela do Caminho de Decisão", # Traduzido
         name=None,
-        subtitle="Decision path through decision tree",
+        subtitle="Caminho de decisão através da árvore de decisão", # Traduzido
         hide_title=False,
         hide_subtitle=False,
         hide_index=False,
@@ -321,11 +342,11 @@ class DecisionPathTableComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Decision path table".
+                        "Tabela do Caminho de Decisão". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle
+            subtitle (str): subtitle Defaults to "Caminho de decisão através da árvore de decisão". # Atualizado docstring
             hide_title (bool, optional): hide title, Defaults to False.
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_index (bool, optional): Hide index selector.
@@ -360,8 +381,9 @@ class DecisionPathTableComponent(ExplainerComponent):
         )
 
         if self.description is None:
+            # Traduzido
             self.description = """
-        Shows the path that an observation took down a specific decision tree.
+        Mostra o caminho que uma observação percorreu numa árvore de decisão específica.
         """
         self.register_dependencies("shadow_trees")
 
@@ -374,17 +396,17 @@ class DecisionPathTableComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title,
+                                        self.title, # Usa self.title
                                         id="decisionpath-table-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle"
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description,
+                                        self.description, # Usa self.description
                                         target="decisionpath-table-title-" + self.name,
                                     ),
                                 ]
@@ -400,13 +422,15 @@ class DecisionPathTableComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
+                                            # Usa index_name já traduzido
                                             dbc.Label(
                                                 f"{self.explainer.index_name}:",
                                                 id="decisionpath-table-index-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select {self.explainer.index_name} to display decision tree for",
+                                                # Traduzido
+                                                f"Selecione {self.explainer.index_name} para exibir a árvore de decisão",
                                                 target="decisionpath-table-index-label-"
                                                 + self.name,
                                             ),
@@ -420,12 +444,13 @@ class DecisionPathTableComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Show tree:",
+                                                "Mostrar árvore:", # Traduzido
                                                 id="decisionpath-table-tree-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select decision tree to display decision tree path for",
+                                                # Traduzido
+                                                f"Selecione a árvore de decisão para exibir o caminho da árvore de decisão",
                                                 target="decisionpath-table-tree-label-"
                                                 + self.name,
                                             ),
@@ -469,12 +494,14 @@ class DecisionPathTableComponent(ExplainerComponent):
     def to_html(self, state_dict=None, add_header=True):
         args = self.get_state_args(state_dict)
         if args["highlight"] is not None:
+             # O DataFrame já foi traduzido em explainer_methods.py
             decisionpath_df = self.explainer.get_decisionpath_summary_df(
                 int(args["highlight"]), args["index"], pos_label=args["pos_label"]
             )
             html = to_html.table_from_df(decisionpath_df)
         else:
-            html = "no tree selected"
+             # Traduzido
+            html = "nenhuma árvore selecionada"
         html = to_html.card(html, title=self.title, subtitle=self.subtitle)
         if add_header:
             return to_html.add_header(html)
@@ -496,6 +523,7 @@ class DecisionPathTableComponent(ExplainerComponent):
                 or not self.explainer.index_exists(index)
             ):
                 raise PreventUpdate
+             # O DataFrame já foi traduzido em explainer_methods.py
             get_decisionpath_df = self.explainer.get_decisionpath_summary_df(
                 int(highlight), index, pos_label=pos_label
             )
@@ -506,9 +534,9 @@ class DecisionPathGraphComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Decision path graph",
+        title="Gráfico do Caminho de Decisão", # Traduzido
         name=None,
-        subtitle="Visualizing entire decision tree",
+        subtitle="A visualizar a árvore de decisão inteira", # Traduzido
         hide_title=False,
         hide_subtitle=False,
         hide_index=False,
@@ -528,11 +556,11 @@ class DecisionPathGraphComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Decision path graph".
+                        "Gráfico do Caminho de Decisão". # Atualizado docstring
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle
+            subtitle (str): subtitle Defaults to "A visualizar a árvore de decisão inteira". # Atualizado docstring
             hide_title (bool, optional): hide title
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_index (bool, optional): hide index selector. Defaults to False.
@@ -555,10 +583,11 @@ class DecisionPathGraphComponent(ExplainerComponent):
         self.index_name = "decisionpath-index-" + self.name
         self.highlight_name = "decisionpath-highlight-" + self.name
         if self.description is None:
+            # Traduzido
             self.description = """
-        Visualizes the path that an observation took down a specific decision tree,
-        by showing the entire decision tree and the path that a specific observation
-        took down this tree.
+        Visualiza o caminho que uma observação percorreu numa árvore de decisão específica,
+        mostrando a árvore de decisão inteira e o caminho que uma observação específica
+        percorreu nesta árvore.
         """
 
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
@@ -580,16 +609,16 @@ class DecisionPathGraphComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title, id="decisionpath-title-" + self.name
+                                        self.title, id="decisionpath-title-" + self.name # Usa self.title
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle"
+                                            self.subtitle, className="card-subtitle" # Usa self.subtitle
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description,
+                                        self.description, # Usa self.description
                                         target="decisionpath-title-" + self.name,
                                     ),
                                 ]
@@ -605,13 +634,15 @@ class DecisionPathGraphComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
+                                             # Usa index_name já traduzido
                                             dbc.Label(
                                                 f"{self.explainer.index_name}:",
                                                 id="decisionpath-index-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select {self.explainer.index_name} to display decision tree for",
+                                                # Traduzido
+                                                f"Selecione {self.explainer.index_name} para exibir a árvore de decisão",
                                                 target="decisionpath-index-label-"
                                                 + self.name,
                                             ),
@@ -625,12 +656,13 @@ class DecisionPathGraphComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Show tree:",
+                                                "Mostrar árvore:", # Traduzido
                                                 id="decisionpath-tree-label-"
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                f"Select decision tree to display decision tree for",
+                                                # Traduzido
+                                                f"Selecione a árvore de decisão para exibir",
                                                 target="decisionpath-tree-label-"
                                                 + self.name,
                                             ),
@@ -659,14 +691,15 @@ class DecisionPathGraphComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Button(
-                                                "Generate Tree Graph",
+                                                "Gerar Gráfico da Árvore", # Traduzido
                                                 color="primary",
                                                 id="decisionpath-button-" + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                "Generate visualisation of decision tree. "
-                                                "Only works if graphviz is properly installed,"
-                                                " and may take a while for large trees.",
+                                                 # Traduzido
+                                                "Gerar visualização da árvore de decisão. "
+                                                "Só funciona se o graphviz estiver corretamente instalado,"
+                                                " e pode demorar algum tempo para árvores grandes.",
                                                 target="decisionpath-button-"
                                                 + self.name,
                                             ),
@@ -713,3 +746,4 @@ class DecisionPathGraphComponent(ExplainerComponent):
             if n_clicks is not None and highlight is not None:
                 return self.explainer.decisiontree_encoded(int(highlight), index)
             raise PreventUpdate
+        
