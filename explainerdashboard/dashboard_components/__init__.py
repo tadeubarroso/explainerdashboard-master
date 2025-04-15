@@ -1,3 +1,4 @@
+from ..explainers import BaseExplainer
 from ..dashboard_methods import *
 from .overview_components import *
 from .classifier_components import *
