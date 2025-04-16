@@ -1345,7 +1345,7 @@ def plotly_pdp(
         y=pdp_mean,
         mode="lines+markers",
         line=dict(color="grey", width=4),
-        name=f"average prediction <br>for different values of <br>{feature_name}",
+        name=f"previsão média <br>para diferentes valores de <br>{feature_name}",
     )
     data = [trace0]
 
@@ -1358,7 +1358,7 @@ def plotly_pdp(
             - pdp_df.iloc[[display_index]].values[0, 0],
             mode="lines+markers",
             line=dict(color="blue", width=4),
-            name=f"prediction for {index_name} {display_index} <br>for different values of <br>{feature_name}",
+            name=f"previsão para {index_name} {display_index} <br>para diferentes valores de <br>{feature_name}",
         )
         data.append(trace1)
     if plot_lines:
@@ -1385,9 +1385,9 @@ def plotly_pdp(
             )
 
     layout = go.Layout(
-        title=f"pdp plot for {feature_name}",
+        title=f"gráfico PDP para {feature_name}",
         plot_bgcolor="#fff",
-        yaxis=dict(title=f"Predicted {target}{f' ({units})' if units else ''}"),
+        yaxis=dict(title=f"Previsto {target}{f' ({units})' if units else ''}"),
         xaxis=dict(title=feature_name),
     )
 
@@ -1547,7 +1547,7 @@ def plotly_confusion_matrix(cm, labels=None, percentage=True, normalize="all"):
 
     if normalize not in ["observed", "pred", "all"]:
         raise ValueError(
-            "Error! parameters normalize must be one of {'observed', 'pred', 'all'} !"
+            "Erro! O parâmetro normalize deve ser um de {'observed', 'pred', 'all'} !"
         )
 
     with np.errstate(all="ignore"):
@@ -1579,9 +1579,9 @@ def plotly_confusion_matrix(cm, labels=None, percentage=True, normalize="all"):
     ]
 
     layout = go.Layout(
-        title="Confusion Matrix",
+        title="Matriz de Confusão",
         xaxis=dict(
-            title="predicted",
+            title="previsto",
             constrain="domain",
             tickmode="array",
             showgrid=False,
@@ -1589,7 +1589,7 @@ def plotly_confusion_matrix(cm, labels=None, percentage=True, normalize="all"):
             ticktext=[f" {lab}" for lab in labels],
         ),
         yaxis=dict(
-            title=dict(text="observed", standoff=20),
+            title=dict(text="observado", standoff=20),
             autorange="reversed",
             side="left",
             scaleanchor="x",
@@ -1649,21 +1649,21 @@ def plotly_roc_auc_curve(fpr, tpr, thresholds, score, cutoff=None, round=2):
         x=fpr,
         y=tpr,
         mode="lines",
-        name="ROC AUC CURVE",
+        name="Curva ROC AUCE",
         text=[
-            f"threshold: {th:.{round}f} <br> FP: {fp:.{round}f} <br> TP: {tp:.{round}f}"
+            f"limiar (ponto de corte): {th:.{round}f} <br> FP: {fp:.{round}f} <br> TP: {tp:.{round}f}"
             for fp, tp, th in zip(fpr, tpr, thresholds)
         ],
         hoverinfo="text",
     )
     data = [trace0]
     layout = go.Layout(
-        title="ROC AUC CURVE",
+        title="Curva ROC AUC",
         #    width=450,
         #    height=450,
-        xaxis=dict(title="False Positive Rate", range=[0, 1], constrain="domain"),
+        xaxis=dict(title="Taxa de Falsos Positivos", range=[0, 1], constrain="domain"),
         yaxis=dict(
-            title="True Positive Rate",
+            title="Taxa de Verdadeiros Positivos",
             range=[0, 1],
             constrain="domain",
             scaleanchor="x",
@@ -1778,7 +1778,7 @@ def plotly_pr_auc_curve(precision, recall, thresholds, score, cutoff=None, round
         x=precision,
         y=recall,
         mode="lines",
-        name="PR AUC CURVE",
+        name="Curva PR AUC",
         text=[
             f"threshold: {th:.{round}f} <br>"
             + f"precision: {p:.{round}f} <br>"
@@ -1789,7 +1789,7 @@ def plotly_pr_auc_curve(precision, recall, thresholds, score, cutoff=None, round
     )
     data = [trace0]
     layout = go.Layout(
-        title="PR AUC CURVE",
+        title="Curva PR AUC",
         #    width=450,
         #    height=450,
         xaxis=dict(title="Precision", range=[0, 1], constrain="domain"),
@@ -1884,7 +1884,7 @@ def plotly_shap_scatter_plot(
     X,
     shap_values_df,
     display_columns=None,
-    title="Shap values",
+    title="Valores Shap",
     idxs=None,
     highlight_index=None,
     na_fill=-999,
@@ -1917,7 +1917,7 @@ def plotly_shap_scatter_plot(
     """
     assert matching_cols(
         X, shap_values_df
-    ), "X and shap_values_df should have matching columns!"
+    ), "X e shap_values_df devem ter colunas correspondentes!"
     if display_columns is None:
         display_columns = X.columns.tolist()
     if idxs is not None:
@@ -1932,14 +1932,14 @@ def plotly_shap_scatter_plot(
         if isinstance(highlight_index, int):
             assert highlight_index >= 0 and highlight_index < len(
                 X
-            ), "if highlight_index is int, then should be between 0 and {len(X)}!"
+            ), "Se highlight_index for um inteiro, então deve estar entre 0 e {len(X)}!"
             highlight_idx = highlight_index
             highlight_index = idxs[highlight_idx]
         elif isinstance(highlight_index, str):
-            assert str(highlight_index) in idxs, f"{highlight_index} not found in idxs!"
+            assert str(highlight_index) in idxs, f"{highlight_index} não encontrado em idxs!"
             highlight_idx = np.where(idxs == str(highlight_index))[0].item()
         else:
-            raise ValueError("Please pass either int or str highlight_index!")
+            raise ValueError("Por favor, passe um inteiro ou uma string para highlight_index!")
 
     # make sure that columns are actually in X:
     display_columns = [col for col in display_columns if col in X.columns]
@@ -1971,7 +1971,7 @@ def plotly_shap_scatter_plot(
                         showscale=True,
                         opacity=0.3,
                         colorbar=dict(
-                            title="feature value <br> (red is high)",
+                            title="valor da característica <br> (vermelho indica valor alto)",
                             tickfont=dict(color="rgba(0, 0, 0, 0)"),
                         ),
                     ),
@@ -2136,7 +2136,7 @@ def plotly_predicted_vs_actual(
         idxs = [str(i) for i in range(len(preds))]
 
     marker_text = [
-        f"{index_name}: {idx}<br>Observed: {actual:.{round}f}<br>Prediction: {pred:.{round}f}"
+        f"{index_name}: {idx}<br>Observado: {actual:.{round}f}<br>Previsão: {pred:.{round}f}"
         for idx, actual, pred in zip(idxs, y, preds)
     ]
 
@@ -2161,9 +2161,9 @@ def plotly_predicted_vs_actual(
     data = [trace0, trace1]
 
     layout = go.Layout(
-        title=f"Predicted {target} vs Observed {target}",
-        yaxis=dict(title=f"Predicted {target}" + (f" ({units})" if units else "")),
-        xaxis=dict(title=f"Observed {target}" + (f" ({units})" if units else "")),
+        title=f"Previsto {target} vs Observado {target}",
+        yaxis=dict(title=f"Previsto {target}" + (f" ({units})" if units else "")),
+        xaxis=dict(title=f"Observado {target}" + (f" ({units})" if units else "")),
         plot_bgcolor="#fff",
         hovermode="closest",
     )
@@ -2219,21 +2219,21 @@ def plotly_plot_residuals(
 
     if residuals == "log-ratio":
         residuals_display = np.log(res_ratio)
-        residuals_name = "residuals log ratio<br>(log(y/preds))"
+        residuals_name = "Logaritmo do rácio dos resíduos<br>(log(y/preds))"
     elif residuals == "ratio":
         residuals_display = res_ratio
-        residuals_name = "residuals ratio<br>(y/preds)"
+        residuals_name = "Rácio dos resíduos<br>(y/preds)"
     elif residuals == "difference":
         residuals_display = res
         residuals_name = "residuals (y-preds)"
     else:
         raise ValueError(
-            f"parameter residuals should be in ['difference', "
-            f"'ratio', 'log-ratio'] but is equal to {residuals}!"
+            f"O parâmetro residuals deve ser um de ['difference', "
+            f"'ratio', 'log-ratio'] mas é igual a {residuals}!"
         )
 
     residuals_text = [
-        f"{index_name}: {idx}<br>Observed: {actual:.{round}f}<br>Prediction: {pred:.{round}f}<br>Residual: {residual:.{round}f}"
+        f"{index_name}: {idx}<br>Observado: {actual:.{round}f}<br>Previsão: {pred:.{round}f}<br>Resíduos: {residual:.{round}f}"
         for idx, actual, pred, residual in zip(idxs, y, preds, res)
     ]
     trace0 = go.Scattergl(
@@ -2249,21 +2249,21 @@ def plotly_plot_residuals(
         x=y if vs_actual else preds,
         y=np.ones(len(preds)) if residuals == "ratio" else np.zeros(len(preds)),
         mode="lines",
-        name=(f"Observed {target}" + f" ({units})" if units else "")
+        name=(f"Observado {target}" + f" ({units})" if units else "")
         if vs_actual
-        else (f"Predicted {target}" + f" ({units})" if units else ""),
+        else (f"Previsto {target}" + f" ({units})" if units else ""),
         hoverinfo="none",
     )
 
     data = [trace0, trace1]
 
     layout = go.Layout(
-        title=f"Residuals vs {'observed' if vs_actual else 'predicted'} {target}",
+        title=f"Resíduos vs {'observado' if vs_actual else 'previsto'} {target}",
         yaxis=dict(title=residuals_name),
         xaxis=dict(
-            title=(f"Observed {target}" + f" ({units})" if units else "")
+            title=(f"Observado {target}" + f" ({units})" if units else "")
             if vs_actual
-            else (f"Predicted {target}" + f" ({units})" if units else "")
+            else (f"Previsto {target}" + f" ({units})" if units else "")
         ),
         plot_bgcolor="#fff",
         hovermode="closest",
@@ -2340,12 +2340,12 @@ def plotly_residuals_vs_col(
         residuals_name = "residuals (y-preds)"
     else:
         raise ValueError(
-            f"parameter residuals should be in ['difference', "
-            f"'ratio', 'log-ratio'] but is equal to {residuals}!"
+            f"O parâmetro residuals deve ser um de ['difference', "
+            f"'ratio', 'log-ratio'] mas é igual a {residuals}!"
         )
 
     residuals_text = [
-        f"{index_name}: {idx}<br>Actual: {actual:.{round}f}<br>Prediction: {pred:.{round}f}<br>Residual: {residual:.{round}f}"
+        f"{index_name}: {idx}<br>Actual: {actual:.{round}f}<br>Previsão: {pred:.{round}f}<br>Resíduo: {residual:.{round}f}"
         for idx, actual, pred, residual in zip(idxs, y, preds, res)
     ]
 
@@ -2408,7 +2408,7 @@ def plotly_residuals_vs_col(
                 )
                 fig.update_yaxes(showgrid=False, zeroline=False, row=1, col=2 + i * 2)
 
-        fig.update_layout(title=f"Residuals vs {col_name}", hovermode="closest")
+        fig.update_layout(title=f"Residuais vs {col_name}", hovermode="closest")
         fig.update_layout(margin=dict(t=40, b=40, l=40, r=40))
         return fig
 
@@ -2435,7 +2435,7 @@ def plotly_residuals_vs_col(
         data = [trace0, trace1]
 
         layout = go.Layout(
-            title=f"Residuals vs {col_name}",
+            title=f"Residuais vs {col_name}",
             yaxis=dict(title=residuals_name),
             xaxis=dict(title=f"{col_name} value"),
             plot_bgcolor="#fff",
@@ -2505,7 +2505,7 @@ def plotly_actual_vs_col(
         idxs = [str(i) for i in range(len(preds))]
 
     y_text = [
-        f"{index_name}: {idx}<br>Observed {target}: {actual:.{round}f}<br>Prediction: {pred:.{round}f}"
+        f"{index_name}: {idx}<br>Observado {target}: {actual:.{round}f}<br>Previsão: {pred:.{round}f}"
         for idx, actual, pred in zip(idxs, y, preds)
     ]
 
@@ -2566,9 +2566,9 @@ def plotly_actual_vs_col(
                 fig.update_yaxes(showgrid=False, zeroline=False, row=1, col=2 + i * 2)
 
         fig.update_layout(
-            title=f"Observed {target} vs {col_name}",
+            title=f"Observado {target} vs {col_name}",
             yaxis=dict(
-                title=f"Observed {target} ({units})" if units else f"Observed {target}"
+                title=f"Observado {target} ({units})" if units else f"Observado {target}"
             ),
             hovermode="closest",
         )
@@ -2582,7 +2582,7 @@ def plotly_actual_vs_col(
             x=col,
             y=y,
             mode="markers",
-            name="Observed",
+            name="Observado",
             text=y_text,
             hoverinfo="text",
         )
@@ -2590,9 +2590,9 @@ def plotly_actual_vs_col(
         data = [trace0]
 
         layout = go.Layout(
-            title=f"Observed {target} vs {col_name}",
+            title=f"Observado {target} vs {col_name}",
             yaxis=dict(
-                title=f"Observed {target} ({units})" if units else f"Observed {target}"
+                title=f"Observado {target} ({units})" if units else f"Observado {target}"
             ),
             xaxis=dict(title=f"{col_name} value"),
             plot_bgcolor="#fff",
@@ -2658,7 +2658,7 @@ def plotly_preds_vs_col(
         idxs = [str(i) for i in range(len(preds))]
 
     preds_text = [
-        f"{index_name}: {idx}<br>Predicted {target}: {pred:.{round}f}{units}<br>Observed {target}: {actual:.{round}f}{units}"
+        f"{index_name}: {idx}<br>Previsto {target}: {pred:.{round}f}{units}<br>Observado {target}: {actual:.{round}f}{units}"
         for idx, actual, pred in zip(idxs, y, preds)
     ]
 
@@ -2719,11 +2719,11 @@ def plotly_preds_vs_col(
                 fig.update_yaxes(showgrid=False, zeroline=False, row=1, col=2 + i * 2)
 
         fig.update_layout(
-            title=f"Predicted {target} vs {col_name}",
+            title=f"Previsto {target} vs {col_name}",
             yaxis=dict(
-                title=f"Predicted {target} ({units})"
+                title=f"Previsto {target} ({units})"
                 if units
-                else f"Predicted {target}"
+                else f"Previsto {target}"
             ),
             hovermode="closest",
         )
@@ -2737,7 +2737,7 @@ def plotly_preds_vs_col(
             x=col,
             y=preds,
             mode="markers",
-            name="Predicted",
+            name="Previsto",
             text=preds_text,
             hoverinfo="text",
         )
@@ -2745,11 +2745,11 @@ def plotly_preds_vs_col(
         data = [trace0]
 
         layout = go.Layout(
-            title=f"Predicted {target} vs {col_name}",
+            title=f"Previsto {target} vs {col_name}",
             yaxis=dict(
-                title=f"Predicted {target} ({units})"
+                title=f"Previsto {target} ({units})"
                 if units
-                else f"Predicted {target}"
+                else f"Previsto {target}"
             ),
             xaxis=dict(title=f"{col_name} value"),
             plot_bgcolor="#fff",
@@ -2797,7 +2797,7 @@ def plotly_rf_trees(
         "ExtraTreesClassifier",
         "ExtraTreesRegressor",
     ), (
-        f"model is of type {type(model)}, but plot_rf_trees() only accepts RandomForestClassifier, "
+        f"o modelo é do tipo {type(model)}, mas plot_rf_trees() só aceita RandomForestClassifier, "
         "RandomForestRegressor, ExtraTreesClassifier or ExtraTreesRegressor!"
     )
 
@@ -2847,24 +2847,24 @@ def plotly_rf_trees(
         y=preds_df.prediction,
         marker_color=preds_df.color,
         text=[
-            f"tree no {t}:<br> prediction={p}<br> click for detailed info"
+            f"Árvore nº {t}:<br> previsão={p}<br> clique para informação detalhada"
             for (t, p) in zip(preds_df.model.values, preds_df.prediction.values)
         ],
         hoverinfo="text",
     )
 
     if target:
-        title = f"Individual decision trees predicting {target}"
-        yaxis_title = f"Predicted {target} {f'({units})' if units else ''}"
+        title = f"Previsões das Árvores de Decisão Individuais {target}"
+        yaxis_title = f"Previsto {target} {f'({units})' if units else ''}"
     else:
-        title = f"Individual decision trees"
-        yaxis_title = f"Predicted outcome ({units})" if units else "Predicted outcome"
+        title = f"Árvores de decisão individuais"
+        yaxis_title = f"Resultado previsto ({units})" if units else "Resultado previsto"
 
     layout = go.Layout(
         title=title,
         plot_bgcolor="#fff",
         yaxis=dict(title=yaxis_title),
-        xaxis=dict(title="decision trees (sorted by prediction"),
+        xaxis=dict(title="árvores de decisão (ordenadas por previsão)"),
     )
     fig = go.Figure(data=[trace0], layout=layout)
     shapes = [
@@ -2967,13 +2967,13 @@ def plotly_xgboost_trees(
         diffs = xgboost_preds_df.pred_proba_diff.values[1:]
 
         texts = [
-            f"tree no {t}:<br>change = {100*d:.{round}f}%<br> click for detailed info"
+            f"Árvore nº {t}:<br>alteração = {100*d:.{round}f}%<br> clique para informação detalhada"
             for (t, d) in zip(trees, diffs)
         ]
         texts.insert(
-            0, f"Base prediction: <br>proba = {100*base_prediction:.{round}f}%"
+            0, f"Previsão base:  <br>proba = {100*base_prediction:.{round}f}%"
         )
-        texts.append(f"Final Prediction: <br>proba = {100*final_prediction:.{round}f}%")
+        texts.append(f"Previsão final: <br>proba = {100*final_prediction:.{round}f}%")
     else:
         final_prediction = xgboost_preds_df.pred.values[-1]
         base_prediction = xgboost_preds_df.pred.values[0]
@@ -2982,11 +2982,11 @@ def plotly_xgboost_trees(
         diffs = xgboost_preds_df.pred_diff.values[1:]
 
         texts = [
-            f"tree no {t}:<br>change = {d:.{round}f}<br> click for detailed info"
+            f"Árvore nº {t}:<br>alteração = {d:.{round}f}<br> clique para informação detalhada"
             for (t, d) in zip(trees, diffs)
         ]
-        texts.insert(0, f"Base prediction: <br>pred = {base_prediction:.{round}f}")
-        texts.append(f"Final Prediction: <br>pred = {final_prediction:.{round}f}")
+        texts.insert(0, f"Previsão base:  <br>pred = {base_prediction:.{round}f}")
+        texts.append(f"Previsão final: <br>pred = {final_prediction:.{round}f}")
 
     green_fill, green_line = "rgba(50, 200, 50, 1.0)", "rgba(40, 160, 50, 1.0)"
     yellow_fill, yellow_line = "rgba(230, 230, 30, 1.0)", "rgba(190, 190, 30, 1.0)"
@@ -3042,11 +3042,11 @@ def plotly_xgboost_trees(
     )
 
     if target:
-        title = f"Individual xgboost decision trees predicting {target}"
-        yaxis_title = f"Predicted {target} {f'({units})' if units else ''}"
+        title = f"Previsões das árvores de decisão XGBoost individuais {target}"
+        yaxis_title = f"Previsto {target} {f'({units})' if units else ''}"
     else:
-        title = f"Individual xgboost decision trees"
-        yaxis_title = f"Predicted outcome ({units})" if units else "Predicted outcome"
+        title = f"Árvores de decisão xgboost individuais"
+        yaxis_title = f"Resultado previsto ({units})" if units else "Resultado previsto"
 
     layout = go.Layout(
         title=title,
@@ -3076,7 +3076,7 @@ def plotly_xgboost_trees(
         )
         annotations.append(
             go.layout.Annotation(
-                x=0.75 * trees.max(), y=y, text=f"Observed={y}", bgcolor="white"
+                x=0.75 * trees.max(), y=y, text=f"Observado={y}", bgcolor="white"
             )
         )
 

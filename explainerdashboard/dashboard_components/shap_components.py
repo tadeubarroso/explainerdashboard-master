@@ -142,7 +142,7 @@ class ShapSummaryComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Depth:",
+                                                "Profundidade:",
                                                 id="shap-summary-depth-label-"
                                                 + self.name,
                                             ),
