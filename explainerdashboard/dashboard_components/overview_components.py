@@ -20,26 +20,20 @@ from .. import to_html
 
 
 class PredictionSummaryComponent(ExplainerComponent):
-    _state_props = dict(
-        index=("modelprediction-index-", "value"),
-        percentile=("modelprediction-percentile-", "value"), # Added from layout
-        pos_label=("pos-label-", "value"),
-    )
-
     def __init__(
         self,
         explainer,
-        title="Resumo da Previsão", # Translated
+        title="Prediction Summary",
         name=None,
         hide_index=False,
         hide_percentile=False,
         hide_title=False,
-        hide_subtitle=False, # Subtitle wasn't used in layout, kept arg for consistency
+        hide_subtitle=False,
         hide_selector=False,
         pos_label=None,
         index=None,
         percentile=True,
-        description=None, # Description wasn't used in layout, kept arg
+        description=None,
         **kwargs,
     ):
         """Shows a summary for a particular prediction
@@ -48,7 +42,7 @@ class PredictionSummaryComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Resumo da Previsão". # Updated default
+                        "Prediction Summary".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -61,32 +55,20 @@ class PredictionSummaryComponent(ExplainerComponent):
                         Defaults to explainer.pos_label
             index ({int, str}, optional): Index to display prediction summary for. Defaults to None.
             percentile (bool, optional): Whether to add the prediction percentile. Defaults to True.
-            description (str, optional): Tooltip to display when hover over
-                component title. When None default text is shown.
+
         """
         super().__init__(explainer, title, name)
 
         self.index_name = "modelprediction-index-" + self.name
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
-        # Register dependency for prediction_result_markdown
-        self.register_dependencies(['prediction_result_markdown'])
-
 
     def layout(self):
-        # Using IndexSelector component for the dropdown now
-        self.index_selector = IndexSelector(
-            self.explainer,
-            "modelprediction-index-" + self.name,
-            index=self.index,
-            **self.kwargs # Pass any relevant kwargs
-        )
-
         return dbc.Card(
             [
                 make_hideable(
                     dbc.CardHeader(
                         [
-                            html.H3(self.title), # Uses translated title
+                            html.H3(self.title),
                         ]
                     ),
                     hide=self.hide_title,
@@ -99,17 +81,14 @@ class PredictionSummaryComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(f"{self.explainer.index_name}:"),
-                                            # Use the IndexSelector layout
-                                            self.index_selector.layout(),
-                                            # Old Dropdown:
-                                            # dcc.Dropdown(
-                                            #     id="modelprediction-index-" + self.name,
-                                            #     options=[
-                                            #         {"label": str(idx), "value": idx}
-                                            #         for idx in self.explainer.idxs
-                                            #     ],
-                                            #     value=self.index,
-                                            # ),
+                                            dcc.Dropdown(
+                                                id="modelprediction-index-" + self.name,
+                                                options=[
+                                                    {"label": str(idx), "value": idx}
+                                                    for idx in self.explainer.idxs
+                                                ],
+                                                value=self.index,
+                                            ),
                                         ],
                                         md=6,
                                     ),
@@ -122,35 +101,24 @@ class PredictionSummaryComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
-                                            # Using dbc.Switch for boolean toggle is often preferred
-                                            dbc.Label("Mostrar Percentil:"), # Translated
-                                            dbc.Checklist(
-                                                options=[
-                                                    {"label": "Mostrar percentil", "value": True} # Translated label
+                                            dbc.Label("Show Percentile:"),
+                                            dbc.Row(
+                                                [
+                                                    dbc.RadioButton(
+                                                        id="modelprediction-percentile-"
+                                                        + self.name,
+                                                        className="form-check-input",
+                                                        value=self.percentile,
+                                                    ),
+                                                    dbc.Label(
+                                                        "Show percentile",
+                                                        html_for="modelprediction-percentile"
+                                                        + self.name,
+                                                        className="form-check-label",
+                                                    ),
                                                 ],
-                                                value=[True] if self.percentile else [],
-                                                id="modelprediction-percentile-" + self.name,
-                                                switch=True,
+                                                check=True,
                                             ),
-                                            # Old RadioButton:
-                                            # dbc.Label("Mostrar Percentil:"), # Translated
-                                            # dbc.Row(
-                                            #     [
-                                            #         dbc.RadioButton(
-                                            #             id="modelprediction-percentile-"
-                                            #             + self.name,
-                                            #             className="form-check-input",
-                                            #             value=self.percentile, # This logic might need adjustment for RadioButton state
-                                            #         ),
-                                            #         dbc.Label(
-                                            #             "Mostrar percentil", # Translated
-                                            #             html_for="modelprediction-percentile"
-                                            #             + self.name,
-                                            #             className="form-check-label",
-                                            #         ),
-                                            #     ],
-                                            #     # check=True, # 'check' is not a standard dbc.Row parameter
-                                            # ),
                                         ],
                                         md=3,
                                     ),
@@ -162,7 +130,6 @@ class PredictionSummaryComponent(ExplainerComponent):
                             [
                                 dbc.Col(
                                     [
-                                        # Markdown component to display the summary
                                         dcc.Markdown(id="modelprediction-" + self.name),
                                     ],
                                     md=12,
@@ -184,17 +151,11 @@ class PredictionSummaryComponent(ExplainerComponent):
                 Input("pos-label-" + self.name, "value"),
             ],
         )
-        def update_output_div(index, percentile_value, pos_label):
-            if index is not None and self.explainer.index_exists(index):
-                # percentile_value from Checklist is a list, need boolean
-                include_percentile = bool(percentile_value)
-                # Assuming prediction_result_markdown returns a string formatted for Markdown
-                markdown_text = self.explainer.prediction_result_markdown(
+        def update_output_div(index, include_percentile, pos_label):
+            if index is not None:
+                return self.explainer.prediction_result_markdown(
                     index, include_percentile=include_percentile, pos_label=pos_label
                 )
-                # Potential translation of markdown text if needed (complex)
-                # markdown_text = translate_markdown(markdown_text)
-                return markdown_text
             raise PreventUpdate
 
 
@@ -208,9 +169,9 @@ class ImportancesComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Importância das Variáveis", # Translated
+        title="Feature Importances",
         name=None,
-        subtitle="Quais variáveis tiveram o maior impacto?", # Translated
+        subtitle="Which features had the biggest impact?",
         hide_type=False,
         hide_depth=False,
         hide_popout=False,
@@ -230,12 +191,11 @@ class ImportancesComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Importância das Variáveis". # Updated default
+                        "Feature Importances".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle(str, optional): Subtitle. Defaults to
-                        "Quais variáveis tiveram o maior impacto?". # Updated default
+            subtitle(str, optional): Subtitle.
             hide_type (bool, optional): Hide permutation/shap selector toggle.
                         Defaults to False.
             hide_depth (bool, optional): Hide number of features toggle.
@@ -264,40 +224,32 @@ class ImportancesComponent(ExplainerComponent):
         ], "importance type must be either 'shap' or 'permutation'!"
 
         if depth is not None:
-            # Use safe_n_features method if available, otherwise fallback
-            n_features = getattr(self.explainer, 'safe_n_features', len(self.explainer.columns_ranked_by_shap()))
-            self.depth = min(depth, n_features)
+            self.depth = min(depth, len(explainer.columns_ranked_by_shap()))
 
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
-        self.no_permutations = no_permutations # Store this attribute
 
         if self.explainer.y_missing or self.no_permutations:
             self.hide_type = True
             self.importance_type = "shap"
-
         if self.description is None:
-             # Translated description
             self.description = f"""
-        Mostra as variáveis ordenadas da mais importante para a menos importante. Podem
-        ser ordenadas pelo valor SHAP absoluto (impacto médio absoluto da
-        variável na previsão final) ou pela importância de permutação (quanto
-        o desempenho do modelo piora quando se embaralha esta variável, tornando-a
-        inútil?).
+        Shows the features sorted from most important to least important. Can 
+        be either sorted by absolute SHAP value (average absolute impact of 
+        the feature on final prediction) or by permutation importance (how much
+        does the model get worse when you shuffle this feature, rendering it
+        useless?).
         """
         self.popout = GraphPopout(
             "importances-" + self.name + "popout",
             "importances-graph-" + self.name,
-            self.title, # uses translated title
-            self.description, # uses translated description
+            self.title,
+            self.description,
         )
         self.register_dependencies("shap_values_df")
         if not (self.hide_type and self.importance_type == "shap"):
-            # Only register if permutations might be shown
             self.register_dependencies("permutation_importances")
 
     def layout(self):
-        # Use safe_n_features method if available, otherwise fallback
-        n_features = getattr(self.explainer, 'safe_n_features', len(self.explainer.columns_ranked_by_shap()))
         return dbc.Card(
             [
                 make_hideable(
@@ -306,18 +258,18 @@ class ImportancesComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title, # uses translated title
+                                        self.title,
                                         className="card-title",
                                         id="importances-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle" # uses translated subtitle
+                                            self.subtitle, className="card-subtitle"
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description, # uses translated description
+                                        self.description,
                                         target="importances-title-" + self.name,
                                     ),
                                 ]
@@ -333,15 +285,15 @@ class ImportancesComponent(ExplainerComponent):
                                 make_hideable(
                                     dbc.Col(
                                         [
-                                            dbc.Label("Tipo de Importância:"), # Translated
+                                            dbc.Label("Importances type:"),
                                             dbc.Select(
                                                 options=[
                                                     {
-                                                        "label": "Importância de Permutação", # Translated
+                                                        "label": "Permutation Importances",
                                                         "value": "permutation",
                                                     },
                                                     {
-                                                        "label": "Valores SHAP", # Translated
+                                                        "label": "SHAP values",
                                                         "value": "shap",
                                                     },
                                                 ],
@@ -351,10 +303,9 @@ class ImportancesComponent(ExplainerComponent):
                                                 + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                # Translated
-                                                "Selecionar o tipo de importância da variável: \n"
-                                                "Importância de Permutação: Quanto diminui a métrica de desempenho ao embaralhar esta variável?\n"
-                                                "Valores SHAP: Qual é a contribuição média SHAP (positiva ou negativa) desta variável?",
+                                                "Select Feature importance type: \n"
+                                                "Permutation Importance: How much does performance metric decrease when shuffling this feature?\n"
+                                                "SHAP values: What is the average SHAP contribution (positive or negative) of this feature?",
                                                 target="importances-permutation-or-shap-form-"
                                                 + self.name,
                                             ),
@@ -369,29 +320,26 @@ class ImportancesComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Profundidade:", # Translated
+                                                "Depth:",
                                                 id="importances-depth-label-"
                                                 + self.name,
                                             ),
                                             dbc.Select(
                                                 id="importances-depth-" + self.name,
                                                 options=[
-                                                    # Add option for 'All'
-                                                    {"label": "Todas", "value": n_features}
-                                                ] + [
                                                     {
                                                         "label": str(i + 1),
                                                         "value": i + 1,
                                                     }
-                                                    # Iterate up to n_features safely
-                                                    for i in range(n_features)
+                                                    for i in range(
+                                                        self.explainer.n_features
+                                                    )
                                                 ],
                                                 size="sm",
-                                                # Set value to n_features if self.depth is None or > n_features
-                                                value=self.depth if self.depth is not None and self.depth <= n_features else n_features,
+                                                value=self.depth,
                                             ),
                                             dbc.Tooltip(
-                                                "Selecionar quantas variáveis exibir", # Translated
+                                                "Select how many features to display",
                                                 target="importances-depth-label-"
                                                 + self.name,
                                             ),
@@ -443,18 +391,14 @@ class ImportancesComponent(ExplainerComponent):
 
     def to_html(self, state_dict=None, add_header=True):
         args = self.get_state_args(state_dict)
-        n_features = getattr(self.explainer, 'safe_n_features', len(self.explainer.columns_ranked_by_shap()))
-        # Handle depth=None (meaning show all)
-        depth_val = None if args["depth"] is None or int(args["depth"]) >= n_features else int(args["depth"])
-
-        # Assuming explainer.plot_importances handles internal plot label translations if needed
+        args["depth"] = None if args["depth"] is None else int(args["depth"])
         fig = self.explainer.plot_importances(
             kind=args["importance_type"],
-            topx=depth_val,
+            topx=args["depth"],
             pos_label=args["pos_label"],
         )
 
-        html = to_html.card(to_html.fig(fig), title=self.title) # uses translated title
+        html = to_html.card(to_html.fig(fig), title=self.title)
         if add_header:
             return to_html.add_header(html)
         return html
@@ -469,13 +413,9 @@ class ImportancesComponent(ExplainerComponent):
             ],
         )
         def update_importances(depth, permutation_shap, pos_label):
-            n_features = getattr(self.explainer, 'safe_n_features', len(self.explainer.columns_ranked_by_shap()))
-            # Handle depth=None (meaning show all)
-            depth_val = None if depth is None or int(depth) >= n_features else int(depth)
-
-             # Assuming explainer.plot_importances handles internal plot label translations if needed
+            depth = None if depth is None else int(depth)
             plot = self.explainer.plot_importances(
-                kind=permutation_shap, topx=depth_val, pos_label=pos_label
+                kind=permutation_shap, topx=depth, pos_label=pos_label
             )
             return plot
 
@@ -486,7 +426,7 @@ class FeatureDescriptionsComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Descrições das Variáveis", # Translated
+        title="Feature Descriptions",
         name=None,
         hide_title=False,
         hide_sort=False,
@@ -499,7 +439,7 @@ class FeatureDescriptionsComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Descrições das Variáveis". # Updated default
+                        "Feature Importances".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
@@ -516,23 +456,14 @@ class FeatureDescriptionsComponent(ExplainerComponent):
                 "FeatureDesriptionsComponent parameter sort should be either"
                 "'alphabet' or 'shap'!"
             )
-        # Check if descriptions exist
-        if not getattr(explainer, 'descriptions', None):
-            print("Warning: No feature descriptions found in explainer.descriptions. "
-                  "FeatureDescriptionsComponent will be empty.")
-            # Optionally hide the component automatically if no descriptions
-            # self.hide = True
-
 
     def layout(self):
-        # Only render layout if descriptions exist? Or render empty state?
-        # Current behaviour is to render controls even if empty.
         return dbc.Card(
             [
                 make_hideable(
                     dbc.CardHeader(
                         [
-                            html.H3(self.title), # uses translated title
+                            html.H3(self.title),
                         ]
                     ),
                     hide=self.hide_title,
@@ -546,15 +477,15 @@ class FeatureDescriptionsComponent(ExplainerComponent):
                                         [
                                             dbc.Row(
                                                 [
-                                                    dbc.Label("Ordenar Variáveis:"), # Translated
+                                                    dbc.Label("Sort Features:"),
                                                     dbc.Select(
                                                         options=[
                                                             {
-                                                                "label": "Alfabeticamente", # Translated
+                                                                "label": "Alphabetically",
                                                                 "value": "alphabet",
                                                             },
                                                             {
-                                                                "label": "SHAP", # Kept SHAP as it's a specific name
+                                                                "label": "SHAP",
                                                                 "value": "shap",
                                                             },
                                                         ],
@@ -566,8 +497,8 @@ class FeatureDescriptionsComponent(ExplainerComponent):
                                                 ]
                                             ),
                                             dbc.Tooltip(
-                                                # Translated
-                                                "Ordenar variáveis alfabeticamente ou pelo valor SHAP absoluto médio (do maior para o menor).",
+                                                "Sort features either alphabetically or from highest "
+                                                "mean absolute SHAP value to lowest.",
                                                 target="feature-descriptions-table-sort-"
                                                 + self.name,
                                             ),
@@ -582,7 +513,6 @@ class FeatureDescriptionsComponent(ExplainerComponent):
                             [
                                 dbc.Col(
                                     [
-                                        # Container for the table generated by callback
                                         html.Div(
                                             id="feature-descriptions-table-" + self.name
                                         )
@@ -598,20 +528,10 @@ class FeatureDescriptionsComponent(ExplainerComponent):
 
     def to_html(self, state_dict=None, add_header=True):
         args = self.get_state_args(state_dict)
-        # Assuming get_descriptions_df returns df with English headers 'Feature' and 'Description'
-        try:
-             df = self.explainer.get_descriptions_df(sort=args["sort"])
-             # Translate headers for static export
-             df_translated = df.rename(columns={'Feature': 'Variável', 'Description': 'Descrição'})
-             html_content = to_html.table_from_df(df_translated)
-        except AttributeError:
-             # Handle cases where descriptions might be missing or method fails
-             html_content = "Descrições das variáveis não disponíveis." # Translated
-        except Exception as e:
-             print(f"Error generating feature descriptions HTML: {e}")
-             html_content = "Erro ao gerar descrições das variáveis." # Translated error
-
-        html = to_html.card(html_content, title=self.title) # uses translated title
+        html = to_html.table_from_df(
+            self.explainer.get_descriptions_df(sort=args["sort"])
+        )
+        html = to_html.card(html, title=self.title)
         if add_header:
             return to_html.add_header(html)
         return html
@@ -622,17 +542,9 @@ class FeatureDescriptionsComponent(ExplainerComponent):
             Input("feature-descriptions-table-sort-" + self.name, "value"),
         )
         def update_feature_descriptions_table(sort):
-            try:
-                 # Assuming get_descriptions_df returns df with English headers
-                df = self.explainer.get_descriptions_df(sort=sort)
-                 # Translate headers for dynamic table display
-                df_translated = df.rename(columns={'Feature': 'Variável', 'Description': 'Descrição'})
-                return dbc.Table.from_dataframe(df_translated, striped=True, bordered=True, hover=True)
-            except AttributeError:
-                 return dbc.Alert("Descrições das variáveis não disponíveis.", color="warning") # Translated warning
-            except Exception as e:
-                print(f"Error updating feature descriptions table: {e}")
-                return dbc.Alert("Erro ao carregar descrições das variáveis.", color="danger") # Translated error
+            return dbc.Table.from_dataframe(
+                self.explainer.get_descriptions_df(sort=sort)
+            )
 
 
 class PdpComponent(ExplainerComponent):
@@ -650,9 +562,9 @@ class PdpComponent(ExplainerComponent):
     def __init__(
         self,
         explainer,
-        title="Gráfico de Dependência Parcial", # Translated
+        title="Partial Dependence Plot",
         name=None,
-        subtitle="Como muda a previsão se alterar uma variável?", # Translated
+        subtitle="How does the prediction change if you change one feature?",
         hide_col=False,
         hide_index=False,
         hide_title=False,
@@ -684,12 +596,11 @@ class PdpComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Gráfico de Dependência Parcial". # Updated default
+                        "Partial Dependence Plot".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle. Defaults to
-                        "Como muda a previsão se alterar uma variável?". # Updated default
+            subtitle (str): subtitle
             hide_col (bool, optional): Hide feature selector. Defaults to False.
             hide_index (bool, optional): Hide index selector. Defaults to False.
             hide_title (bool, optional): Hide title, Defaults to False.
@@ -725,35 +636,24 @@ class PdpComponent(ExplainerComponent):
         self.index_name = "pdp-index-" + self.name
 
         if self.col is None:
-             # Check if columns_ranked_by_shap exists and has elements
-            ranked_cols = self.explainer.columns_ranked_by_shap()
-            if ranked_cols:
-                 self.col = ranked_cols[0]
-            else:
-                 # Fallback if no columns available (should not happen with valid explainer)
-                 self.col = None
-                 print("Warning: No columns found for PDP default.")
+            self.col = self.explainer.columns_ranked_by_shap()[0]
 
-
-        self.feature_input_component = feature_input_component # Store for later checks
         if self.feature_input_component is not None:
             self.exclude_callbacks(self.feature_input_component)
             self.hide_index = True
 
         if self.description is None:
-             # Translated description
             self.description = f"""
-        O gráfico de dependência parcial (PDP) mostra como a previsão do modelo
-        mudaria se alterasse uma variável específica. O gráfico mostra uma amostra
-        de observações e como essas observações mudariam com esta
-        variável (linhas de grade - gridlines). O efeito médio é mostrado a cinzento. O efeito
-        de alterar a variável para um único {self.explainer.index_name} é
-        mostrado a azul. Pode ajustar quantas observações amostrar para a
-        média, quantas linhas de grade mostrar e para quantos pontos ao longo do
-        eixo x calcular as previsões do modelo (pontos de grade - gridpoints).
+        The partial dependence plot (pdp) show how the model prediction would
+        change if you change one particular feature. The plot shows you a sample
+        of observations and how these observations would change with this
+        feature (gridlines). The average effect is shown in grey. The effect
+        of changing the feature for a single {self.explainer.index_name} is
+        shown in blue. You can adjust how many observations to sample for the 
+        average, how many gridlines to show, and how many points along the
+        x-axis to calculate model predictions for (gridpoints).
         """
         self.selector = PosLabelSelector(explainer, name=self.name, pos_label=pos_label)
-        # Use IndexSelector component
         self.index_selector = IndexSelector(
             explainer,
             "pdp-index-" + self.name,
@@ -765,29 +665,11 @@ class PdpComponent(ExplainerComponent):
         self.popout = GraphPopout(
             "pdp-" + self.name + "popout",
             "pdp-graph-" + self.name,
-            self.title, # uses translated title
-            self.description, # uses translated description
+            self.title,
+            self.description,
         )
-        # Register dependency needed for plot_pdp
-        self.register_dependencies(['pdp'])
-
 
     def layout(self):
-        # Get ranked columns safely
-        ranked_cols = self.explainer.columns_ranked_by_shap()
-        col_options = [{"label": col, "value": col} for col in ranked_cols] if ranked_cols else []
-        # Ensure self.col is valid or set to None if no options
-        current_col = self.col if self.col in ranked_cols else (ranked_cols[0] if ranked_cols else None)
-
-        # Get safe limits for sample and gridlines
-        safe_len = len(self.explainer) if hasattr(self.explainer, '__len__') else 1000 # Default max if len unknown
-        safe_sample = min(self.sample, safe_len)
-        safe_gridlines = min(self.gridlines, safe_len)
-
-        # Determine if categorical sort dropdown should be visible
-        is_categorical = current_col is not None and current_col in getattr(self.explainer, 'cat_cols', [])
-        cats_sort_div_style = {} if is_categorical else dict(display="none")
-
         return dbc.Card(
             [
                 make_hideable(
@@ -795,15 +677,15 @@ class PdpComponent(ExplainerComponent):
                         [
                             html.Div(
                                 [
-                                    html.H3(self.title, id="pdp-title-" + self.name), # Uses translated title
+                                    html.H3(self.title, id="pdp-title-" + self.name),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle" # Uses translated subtitle
+                                            self.subtitle, className="card-subtitle"
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description, # Uses translated description
+                                        self.description,
                                         target="pdp-title-" + self.name,
                                     ),
                                 ]
@@ -820,19 +702,21 @@ class PdpComponent(ExplainerComponent):
                                     dbc.Col(
                                         [
                                             dbc.Label(
-                                                "Variável:", # Translated
+                                                "Feature:",
                                                 html_for="pdp-col" + self.name,
                                                 id="pdp-col-label-" + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                # Translated
-                                                "Selecionar a variável para a qual deseja ver o gráfico de dependência parcial",
+                                                "Select the feature for which you want to see the partial dependence plot",
                                                 target="pdp-col-label-" + self.name,
                                             ),
                                             dbc.Select(
                                                 id="pdp-col-" + self.name,
-                                                options=col_options,
-                                                value=current_col,
+                                                options=[
+                                                    {"label": col, "value": col}
+                                                    for col in self.explainer.columns_ranked_by_shap()
+                                                ],
+                                                value=self.col,
                                                 size="sm",
                                             ),
                                         ],
@@ -848,8 +732,7 @@ class PdpComponent(ExplainerComponent):
                                                 id="pdp-index-label-" + self.name,
                                             ),
                                             dbc.Tooltip(
-                                                 # Translated
-                                                f"Selecionar o {self.explainer.index_name} para exibir o gráfico de dependência parcial",
+                                                f"Select the {self.explainer.index_name} to display the partial dependence plot for",
                                                 target="pdp-index-label-" + self.name,
                                             ),
                                             self.index_selector.layout(),
@@ -870,7 +753,6 @@ class PdpComponent(ExplainerComponent):
                                     [
                                         dcc.Loading(
                                             id="loading-pdp-graph-" + self.name,
-                                            type="circle",
                                             children=[
                                                 dcc.Graph(
                                                     id="pdp-graph-" + self.name,
@@ -908,22 +790,28 @@ class PdpComponent(ExplainerComponent):
                                             [
                                                 dbc.Row(
                                                     [
-                                                        # Use Switch for boolean toggle
-                                                        dbc.Label("Remover Preenchimento:"), # Translated
+                                                        dbc.Label("Drop fill:"),
+                                                        dbc.Tooltip(
+                                                            "Drop all observations with feature values "
+                                                            f"equal to {self.explainer.na_fill} from the plot. "
+                                                            "This prevents the filler values from ruining the x-axis.",
+                                                            target="pdp-dropna-"
+                                                            + self.name,
+                                                        ),
                                                         dbc.Checklist(
                                                             options=[
-                                                                {"label": f"Remover {self.explainer.na_fill}", "value": True} # Translated label
+                                                                {
+                                                                    "label": "Drop na_fill",
+                                                                    "value": True,
+                                                                }
                                                             ],
-                                                            value=[True] if self.dropna else [],
-                                                            id="pdp-dropna-" + self.name,
+                                                            value=[True]
+                                                            if self.dropna
+                                                            else [],
+                                                            id="pdp-dropna-"
+                                                            + self.name,
+                                                            inline=True,
                                                             switch=True,
-                                                        ),
-                                                        dbc.Tooltip(
-                                                            # Translated
-                                                            "Remover todas as observações com valores da variável "
-                                                            f"iguais a {self.explainer.na_fill} do gráfico. "
-                                                            "Isto evita que os valores de preenchimento distorçam o eixo x.",
-                                                            target="pdp-dropna-" + self.name,
                                                         ),
                                                     ]
                                                 ),
@@ -935,22 +823,23 @@ class PdpComponent(ExplainerComponent):
                                         dbc.Col(
                                             [
                                                 dbc.Label(
-                                                    "Amostra:", # Translated
+                                                    "Sample:",
                                                     id="pdp-sample-label-" + self.name,
                                                 ),
                                                 dbc.Tooltip(
-                                                     # Translated
-                                                    "Número de observações a usar para calcular a dependência parcial média",
-                                                    target="pdp-sample-label-" + self.name,
+                                                    "Number of observations to use to calculate average partial dependence",
+                                                    target="pdp-sample-label-"
+                                                    + self.name,
                                                 ),
                                                 dbc.Input(
                                                     id="pdp-sample-" + self.name,
-                                                    value=safe_sample,
+                                                    value=min(
+                                                        self.sample, len(self.explainer)
+                                                    ),
                                                     type="number",
                                                     min=0,
-                                                    max=safe_len,
-                                                    step=10 if safe_len > 100 else 1, # Adjust step based on max
-                                                    debounce=True # Update only after user stops typing
+                                                    max=len(self.explainer),
+                                                    step=1,
                                                 ),
                                             ]
                                         ),
@@ -960,22 +849,25 @@ class PdpComponent(ExplainerComponent):
                                         dbc.Col(
                                             [  # gridlines
                                                 dbc.Label(
-                                                    "Linhas ICE:", # Translated (ICE lines is common term)
-                                                    id="pdp-gridlines-label-" + self.name,
+                                                    "Gridlines:",
+                                                    id="pdp-gridlines-label-"
+                                                    + self.name,
                                                 ),
                                                 dbc.Tooltip(
-                                                    # Translated
-                                                    "Número de dependências parciais de observações individuais (linhas ICE) a mostrar no gráfico",
-                                                    target="pdp-gridlines-label-" + self.name,
+                                                    "Number of individual observations' partial dependences to show in plot",
+                                                    target="pdp-gridlines-label-"
+                                                    + self.name,
                                                 ),
                                                 dbc.Input(
                                                     id="pdp-gridlines-" + self.name,
-                                                    value=safe_gridlines,
+                                                    value=min(
+                                                        self.gridlines,
+                                                        len(self.explainer),
+                                                    ),
                                                     type="number",
                                                     min=0,
-                                                    max=safe_len,
-                                                    step=10 if safe_len > 100 else 1, # Adjust step
-                                                    debounce=True
+                                                    max=len(self.explainer),
+                                                    step=1,
                                                 ),
                                             ]
                                         ),
@@ -985,23 +877,23 @@ class PdpComponent(ExplainerComponent):
                                         dbc.Col(
                                             [  # gridpoints
                                                 dbc.Label(
-                                                    "Pontos Grade:", # Translated
-                                                    id="pdp-gridpoints-label-" + self.name,
+                                                    "Gridpoints:",
+                                                    id="pdp-gridpoints-label-"
+                                                    + self.name,
                                                 ),
                                                 dbc.Tooltip(
-                                                     # Translated
-                                                    "Número de pontos a amostrar no eixo da variável para previsões."
-                                                    " Quanto maior, mais suave a curva, mas demora mais a calcular",
-                                                    target="pdp-gridpoints-label-" + self.name,
+                                                    "Number of points to sample the feature axis for predictions."
+                                                    " The higher, the smoother the curve, but takes longer to calculate",
+                                                    target="pdp-gridpoints-label-"
+                                                    + self.name,
                                                 ),
                                                 dbc.Input(
                                                     id="pdp-gridpoints-" + self.name,
                                                     value=self.gridpoints,
                                                     type="number",
-                                                    min=2, # Minimum 2 points needed for a line
+                                                    min=0,
                                                     max=100,
                                                     step=1,
-                                                    debounce=True
                                                 ),
                                             ]
                                         ),
@@ -1013,28 +905,30 @@ class PdpComponent(ExplainerComponent):
                                                 dbc.Col(
                                                     [
                                                         html.Label(
-                                                            "Ordenar categorias:", # Translated
-                                                            id="pdp-categories-sort-label-" + self.name,
+                                                            "Sort categories:",
+                                                            id="pdp-categories-sort-label-"
+                                                            + self.name,
                                                         ),
                                                         dbc.Tooltip(
-                                                             # Translated
-                                                            "Como ordenar as categorias: Alfabeticamente, mais comum "
-                                                            "primeiro (Frequência), ou maior valor SHAP absoluto médio primeiro (Impacto Shap)",
-                                                            target="pdp-categories-sort-label-" + self.name,
+                                                            "How to sort the categories: Alphabetically, most common "
+                                                            "first (Frequency), or highest mean absolute SHAP value first (Shap impact)",
+                                                            target="pdp-categories-sort-label-"
+                                                            + self.name,
                                                         ),
                                                         dbc.Select(
-                                                            id="pdp-categories-sort-" + self.name,
+                                                            id="pdp-categories-sort-"
+                                                            + self.name,
                                                             options=[
                                                                 {
-                                                                    "label": "Alfabeticamente", # Translated
+                                                                    "label": "Alphabetically",
                                                                     "value": "alphabet",
                                                                 },
                                                                 {
-                                                                    "label": "Frequência", # Translated
+                                                                    "label": "Frequency",
                                                                     "value": "freq",
                                                                 },
                                                                 {
-                                                                    "label": "Impacto Shap", # Translated
+                                                                    "label": "Shap impact",
                                                                     "value": "shap",
                                                                 },
                                                             ],
@@ -1045,7 +939,9 @@ class PdpComponent(ExplainerComponent):
                                                 )
                                             ],
                                             id="pdp-categories-sort-div-" + self.name,
-                                            style=cats_sort_div_style, # Dynamically set style
+                                            style={}
+                                            if self.col in self.explainer.cat_cols
+                                            else dict(display="none"),
                                         ),
                                         hide=self.hide_cats_sort,
                                     ),
@@ -1067,67 +963,46 @@ class PdpComponent(ExplainerComponent):
 
     def to_html(self, state_dict=None, add_header=True):
         args = self.get_state_args(state_dict)
-        # Validate inputs for static generation
-        col = args.get("col")
-        index = args.get("index")
-        dropna = bool(args.get("dropna"))
-        sample = args.get("sample", 100) # Provide default
-        gridlines = args.get("gridlines", 50) # Provide default
-        gridpoints = args.get("gridpoints", 10) # Provide default
-        cats_sort = args.get("cats_sort", 'freq') # Provide default
-        pos_label = args.get("pos_label")
+        if self.feature_input_component is None:
+            fig = self.explainer.plot_pdp(
+                args["col"],
+                args["index"],
+                drop_na=bool(args["dropna"]),
+                sample=args["sample"],
+                gridlines=args["gridlines"],
+                gridpoints=args["gridpoints"],
+                sort=args["cats_sort"],
+                pos_label=args["pos_label"],
+            )
+            html = to_html.fig(fig)
+        else:
+            inputs = {
+                k: v
+                for k, v in self.feature_input_component.get_state_args(
+                    state_dict
+                ).items()
+                if k != "index"
+            }
+            inputs = list(inputs.values())
+            if len(inputs) == len(
+                self.feature_input_component._input_features
+            ) and not any([i is None for i in inputs]):
+                X_row = self.explainer.get_row_from_input(inputs, ranked_by_shap=True)
+                fig = self.explainer.plot_pdp(
+                    args["col"],
+                    X_row=X_row,
+                    drop_na=bool(args["dropna"]),
+                    sample=args["sample"],
+                    gridlines=args["gridlines"],
+                    gridpoints=args["gridpoints"],
+                    sort=args["cats_sort"],
+                    pos_label=args["pos_label"],
+                )
+                html = to_html.fig(fig)
+            else:
+                html = f"<div>input data incorrect</div>"
 
-        # Default html content
-        html_content = "Dados de entrada inválidos ou insuficientes para gerar o gráfico PDP." # Translated error
-
-        if col is not None: # Minimum requirement is a column
-            if self.feature_input_component is None:
-                if index is not None: # If no feature input, index is required
-                     # Assuming explainer.plot_pdp handles internal plot label translations if needed
-                    fig = self.explainer.plot_pdp(
-                        col,
-                        index,
-                        drop_na=dropna,
-                        sample=sample,
-                        gridlines=gridlines,
-                        gridpoints=gridpoints,
-                        sort=cats_sort,
-                        pos_label=pos_label,
-                    )
-                    html_content = to_html.fig(fig)
-                else:
-                     html_content = "Índice não selecionado para o gráfico PDP." # Translated error
-
-            else: # Using feature input component
-                # Reconstruct input row from state_dict
-                inputs = {
-                    k: v
-                    for k, v in self.feature_input_component.get_state_args(
-                        state_dict
-                    ).items()
-                    if k != "index" # Exclude index key if present
-                }
-                # Check if all inputs are present and valid
-                if len(inputs) == len(
-                    self.feature_input_component._input_features # Assuming this attr exists
-                ) and not any([i is None for i in inputs.values()]):
-                    X_row = self.explainer.get_row_from_input(list(inputs.values()), ranked_by_shap=True)
-                     # Assuming explainer.plot_pdp handles internal plot label translations if needed
-                    fig = self.explainer.plot_pdp(
-                        col,
-                        X_row=X_row,
-                        drop_na=dropna,
-                        sample=sample,
-                        gridlines=gridlines,
-                        gridpoints=gridpoints,
-                        sort=cats_sort,
-                        pos_label=pos_label,
-                    )
-                    html_content = to_html.fig(fig)
-                else:
-                    html_content = f"<div>Dados de entrada incorretos</div>" # Translated
-
-        html = to_html.card(html_content, title=self.title) # uses translated title
+        html = to_html.card(html, title=self.title)
         if add_header:
             return to_html.add_header(html)
         return html
@@ -1136,15 +1011,12 @@ class PdpComponent(ExplainerComponent):
         @app.callback(
             Output("pdp-categories-sort-div-" + self.name, "style"),
             Input("pdp-col-" + self.name, "value"),
-            # prevent_initial_call=True # Prevent initial call unless needed
         )
         def update_pdp_sort_div(col):
-            if col is not None and col in getattr(self.explainer, 'cat_cols', []):
-                 return {} # Show div
-            return dict(display="none") # Hide div
+            return {} if col in self.explainer.cat_cols else dict(display="none")
 
         if self.feature_input_component is None:
-            # Callback for when index selector is used
+
             @app.callback(
                 Output("pdp-graph-" + self.name, "figure"),
                 [
@@ -1157,30 +1029,25 @@ class PdpComponent(ExplainerComponent):
                     Input("pdp-categories-sort-" + self.name, "value"),
                     Input("pos-label-" + self.name, "value"),
                 ],
-                 # prevent_initial_call=True
             )
             def update_pdp_graph(
                 index, col, drop_na, sample, gridlines, gridpoints, sort, pos_label
             ):
-                # Validate inputs
-                if col is None or index is None or not self.explainer.index_exists(index):
-                    # Return empty figure or raise PreventUpdate if no plot should be shown
-                    # return go.Figure()
+                if index is None or not self.explainer.index_exists(index):
                     raise PreventUpdate
-                # Assuming explainer.plot_pdp handles internal plot label translations if needed
                 return self.explainer.plot_pdp(
                     col,
                     index,
-                    drop_na=bool(drop_na), # drop_na from checklist is a list
-                    sample=int(sample) if sample is not None else 100,
-                    gridlines=int(gridlines) if gridlines is not None else 50,
-                    gridpoints=int(gridpoints) if gridpoints is not None else 10,
+                    drop_na=bool(drop_na),
+                    sample=sample,
+                    gridlines=gridlines,
+                    gridpoints=gridpoints,
                     sort=sort,
                     pos_label=pos_label,
                 )
 
         else:
-            # Callback for when feature input component is used
+
             @app.callback(
                 Output("pdp-graph-" + self.name, "figure"),
                 [
@@ -1191,43 +1058,32 @@ class PdpComponent(ExplainerComponent):
                     Input("pdp-gridpoints-" + self.name, "value"),
                     Input("pdp-categories-sort-" + self.name, "value"),
                     Input("pos-label-" + self.name, "value"),
-                    # Use the specific inputs from the feature_input_component
                     *self.feature_input_component._feature_callback_inputs,
                 ],
-                 # prevent_initial_call=True
             )
-            def update_pdp_graph_feature_input(
+            def update_pdp_graph(
                 col, drop_na, sample, gridlines, gridpoints, sort, pos_label, *inputs
             ):
-                # Validate inputs
-                if col is None or any(i is None for i in inputs):
-                     # return go.Figure()
-                    raise PreventUpdate
-
-                # Get the row from inputs
-                X_row = self.explainer.get_row_from_input(inputs, ranked_by_shap=True) # Assuming this method exists and works
-                 # Assuming explainer.plot_pdp handles internal plot label translations if needed
+                X_row = self.explainer.get_row_from_input(inputs, ranked_by_shap=True)
                 return self.explainer.plot_pdp(
                     col,
                     X_row=X_row,
-                    drop_na=bool(drop_na), # drop_na from checklist is a list
-                    sample=int(sample) if sample is not None else 100,
-                    gridlines=int(gridlines) if gridlines is not None else 50,
-                    gridpoints=int(gridpoints) if gridpoints is not None else 10,
+                    drop_na=bool(drop_na),
+                    sample=sample,
+                    gridlines=gridlines,
+                    gridpoints=gridpoints,
                     sort=sort,
                     pos_label=pos_label,
                 )
 
 
 class FeatureInputComponent(ExplainerComponent):
-    # Define _state_props dynamically in __init__
-
     def __init__(
         self,
         explainer,
-        title="Entrada de Variáveis", # Translated
+        title="Feature Input",
         name=None,
-        subtitle="Ajuste os valores das variáveis para alterar a previsão", # Translated
+        subtitle="Adjust the feature values to change the prediction",
         hide_title=False,
         hide_subtitle=False,
         hide_index=False,
@@ -1245,12 +1101,11 @@ class FeatureInputComponent(ExplainerComponent):
             explainer (Explainer): explainer object constructed with either
                         ClassifierExplainer() or RegressionExplainer()
             title (str, optional): Title of tab or page. Defaults to
-                        "Entrada de Variáveis". # Updated default
+                        "What if...".
             name (str, optional): unique name to add to Component elements.
                         If None then random uuid is generated to make sure
                         it's unique. Defaults to None.
-            subtitle (str): subtitle. Defaults to
-                        "Ajuste os valores das variáveis para alterar a previsão". # Updated default
+            subtitle (str): subtitle
             hide_title (bool, optional): hide the title
             hide_subtitle (bool, optional): Hide subtitle. Defaults to False.
             hide_index (bool, optional): hide the index selector
@@ -1259,121 +1114,95 @@ class FeatureInputComponent(ExplainerComponent):
             n_input_cols (int, optional): number of columns to split features inputs in.
                 Defaults to 4.
             sort_features(str, optional): how to sort the features. For now only options
-                is 'shap' to sort by mean absolute shap value. Options: 'shap', 'alphabet'.
+                is 'shap' to sort by mean absolute shap value.
             fill_row_first (bool, optional): if True most important features will
                 be on top row, if False they will be in most left column.
             description (str, optional): Tooltip to display when hover over
                 component title. When None default text is shown.
+
+
         """
         super().__init__(explainer, title, name)
 
-        # Store attributes needed later
-        self.n_input_cols = n_input_cols
-        self.sort_features = sort_features
-        self.fill_row_first = fill_row_first
-        self.hide_range = hide_range
+        assert len(explainer.columns) == len(
+            set(explainer.columns)
+        ), "Not all X column names are unique, so cannot launch FeatureInputComponent component/tab!"
 
-        # Ensure columns are unique
-        if len(explainer.columns) != len(set(explainer.columns)):
-             # Developer-facing error
-             raise ValueError("Not all X column names are unique, so cannot launch FeatureInputComponent component/tab!")
-
-        # Use IndexSelector component
         self.index_input = IndexSelector(
-            explainer, name="feature-input-index-" + self.name, index=index, **kwargs
+            explainer, name="feature-input-index-" + self.name, **kwargs
         )
-        self.index_name = "feature-input-index-" + self.name # Keep for easy reference
+        self.index_name = "feature-input-index-" + self.name
 
-        # Determine feature order
+        self._feature_callback_inputs = [
+            Input("feature-input-" + feature + "-input-" + self.name, "value")
+            for feature in self.explainer.columns_ranked_by_shap()
+        ]
+        self._feature_callback_outputs = [
+            Output("feature-input-" + feature + "-input-" + self.name, "value")
+            for feature in self.explainer.columns_ranked_by_shap()
+        ]
+
         if self.sort_features == "shap":
             self._input_features = self.explainer.columns_ranked_by_shap()
         elif self.sort_features == "alphabet":
-            # Use merged_cols if available, otherwise fallback to columns
-            cols_to_sort = getattr(self.explainer, 'merged_cols', self.explainer.columns)
-            self._input_features = sorted(list(cols_to_sort))
+            self._input_features = sorted(self.explainer.merged_cols.tolist())
         else:
-             # Developer-facing error
             raise ValueError(
                 f"parameter sort_features should be either 'shap', "
-                f"or 'alphabet', but you passed sort_features='{self.sort_features}'"
+                "or 'alphabet', but you passed sort_features='{self.sort_features}'"
             )
 
-        # Generate input components and define callbacks/state props dynamically
-        self._feature_inputs = []
-        self._feature_callback_inputs = []
-        self._feature_callback_outputs = []
-        self._state_props = {}
+        self._feature_inputs = [
+            self._generate_dash_input(
+                feature,
+                self.explainer.onehot_cols,
+                self.explainer.onehot_dict,
+                self.explainer.categorical_dict,
+            )
+            for feature in self._input_features
+        ]
 
-        # Safely access dictionaries, provide empty dicts as fallback
-        onehot_cols = getattr(self.explainer, 'onehot_cols', set())
-        onehot_dict = getattr(self.explainer, 'onehot_dict', {})
-        cat_dict = getattr(self.explainer, 'categorical_dict', {})
-
-        for feature in self._input_features:
-             input_id = f"feature-input-{feature}-input-{self.name}"
-             self._feature_inputs.append(
-                 self._generate_dash_input(
-                     feature, onehot_cols, onehot_dict, cat_dict
-                 )
-             )
-             self._feature_callback_inputs.append(Input(input_id, "value"))
-             self._feature_callback_outputs.append(Output(input_id, "value"))
-             self._state_props[feature] = (f"feature-input-{feature}-input-", "value")
-
-        # Add index to state props
+        self._state_props = {
+            feature: (f"feature-input-{feature}-input-", "value")
+            for feature in self._input_features
+        }
         self._state_props["index"] = ("feature-input-index-", "value")
 
         if self.description is None:
-            # Translated description
             self.description = """
-        Ajuste os valores de entrada para ver as previsões para cenários hipotéticos ("what if")."""
-        # Register dependency for get_X_row
-        self.register_dependencies(['get_X_row'])
-
+        Adjust the input values to see predictions for what if scenarios."""
 
     def _generate_dash_input(self, col, onehot_cols, onehot_dict, cat_dict):
-        input_id = f"feature-input-{col}-input-{self.name}"
-        # Check for categorical columns defined in cat_dict
         if col in cat_dict:
-            col_values = cat_dict.get(col, []) # Safely get values
+            col_values = cat_dict[col]
             return html.Div(
                 [
                     dbc.Label(col),
                     dcc.Dropdown(
-                        id=input_id,
+                        id="feature-input-" + col + "-input-" + self.name,
                         options=[
-                            dict(label=str(col_val), value=col_val) # Ensure label is string
-                            for col_val in col_values
+                            dict(label=col_val, value=col_val) for col_val in col_values
                         ],
                         style={"width": "100%"},
-                        clearable=False, # Decide if user should be able to clear selection
+                        clearable=False,
                     ),
-                     # Translated FormText
-                    make_hideable(dbc.FormText(f"Selecione qualquer {col}"), hide=self.hide_range),
+                    dbc.FormText(f"Select any {col}") if not self.hide_range else None,
                 ]
             )
-        # Check for one-hot encoded base columns
-        elif col in onehot_dict: # onehot_dict keys are base cols
-             # Get the actual one-hot encoded columns for this base feature
-            col_values = onehot_dict.get(col, [])
-             # Generate display values (remove prefix)
+        elif col in onehot_cols:
+            col_values = [c for c in onehot_dict[col]]
             display_values = [
-                val[len(col) + 1 :] if val.startswith(col + "_") else val
-                for val in col_values
+                col_val[len(col) + 1 :] if col_val.startswith(col + "_") else col_val
+                for col_val in col_values
             ]
-             # Check if a "not encoded" state exists (all OHE columns are 0 for a sample)
-            not_encoded_val = getattr(self.explainer, 'onehot_notencoded', {}).get(col)
-            if not_encoded_val is not None:
-                 # Add option representing the "not encoded" state
-                 # Use a specific value or representation for this state
-                 col_values.append(not_encoded_val)
-                 display_values.append(str(not_encoded_val)) # Or a more descriptive label
-
+            if any(self.explainer.X[self.explainer.onehot_dict[col]].sum(axis=1) == 0):
+                col_values.append(self.explainer.onehot_notencoded[col])
+                display_values.append(self.explainer.onehot_notencoded[col])
             return html.Div(
                 [
                     dbc.Label(col),
                     dcc.Dropdown(
-                        id=input_id,
+                        id="feature-input-" + col + "-input-" + self.name,
                         options=[
                             dict(label=display, value=col_val)
                             for display, col_val in zip(display_values, col_values)
@@ -1381,100 +1210,82 @@ class FeatureInputComponent(ExplainerComponent):
                         style={"width": "100%"},
                         clearable=False,
                     ),
-                     # Translated FormText
-                    make_hideable(dbc.FormText(f"Selecione qualquer {col}"), hide=self.hide_range),
+                    dbc.FormText(f"Select any {col}") if not self.hide_range else None,
                 ]
             )
-        # Assume numerical otherwise
         else:
-            min_range, max_range = None, None
-            # Safely get min/max, handling potential errors or missing data
-            try:
-                 # Exclude na_fill value when calculating min/max
-                valid_values = self.explainer.X[col][lambda x: x != self.explainer.na_fill]
-                if not valid_values.empty:
-                     min_range = np.round(valid_values.min(), 2)
-                     max_range = np.round(valid_values.max(), 2)
-            except KeyError:
-                print(f"Warning: Column '{col}' not found in explainer data for range calculation.")
-            except Exception as e:
-                print(f"Warning: Could not determine range for numerical feature '{col}': {e}")
-
-            range_text = f"Intervalo: {min_range}-{max_range}" if min_range is not None else "Intervalo indisponível" # Translated fallback
-
+            min_range = np.round(
+                self.explainer.X[col][lambda x: x != self.explainer.na_fill].min(), 2
+            )
+            max_range = np.round(
+                self.explainer.X[col][lambda x: x != self.explainer.na_fill].max(), 2
+            )
             return html.Div(
                 [
                     dbc.Label(col),
                     dbc.Input(
-                        id=input_id,
-                        type="number",
-                        # Add step attribute for usability if appropriate (e.g., step=0.1 or 1)
-                        step="any", # Allows any decimal
-                        debounce=True # Update only after user stops typing
+                        id="feature-input-" + col + "-input-" + self.name, type="number"
                     ),
-                    make_hideable(dbc.FormText(range_text), hide=self.hide_range), # Uses translated text
+                    dbc.FormText(f"Range: {min_range}-{max_range}")
+                    if not self.hide_range
+                    else None,
                 ]
             )
 
     def get_slices_cols_first(self, n_inputs, n_cols=2):
         """returns a list of slices to divide n inputs into n_cols columns,
         filling columns first"""
-        if n_inputs == 0: return []
-        n_cols = min(n_cols, n_inputs) # Ensure n_cols is not greater than n_inputs
+        if n_inputs < n_cols:
+            n_cols = n_inputs
         rows_per_col = ceil(n_inputs / n_cols)
         slices = []
         for col in range(n_cols):
-            start = col * rows_per_col
-            end = min(start + rows_per_col, n_inputs) # Ensure end does not exceed n_inputs
-            if start < end: # Only add slice if it's valid
-                 slices.append(slice(start, end))
+            if col == n_cols - 1 and n_inputs % rows_per_col > 0:
+                slices.append(
+                    slice(
+                        col * rows_per_col,
+                        col * rows_per_col + (n_inputs % rows_per_col),
+                    )
+                )
+            else:
+                slices.append(
+                    slice(col * rows_per_col, col * rows_per_col + rows_per_col)
+                )
         return slices
 
     def get_slices_rows_first(self, n_inputs, n_cols=3):
         """returns a list of slices to divide n inputs into n_cols columns,
-        filling rows first"""
-        if n_inputs == 0: return []
-        n_cols = min(n_cols, n_inputs) # Ensure n_cols is not greater than n_inputs
-        slices = []
-        for i in range(n_cols):
-             # Create list of indices for this column
-             indices = list(range(i, n_inputs, n_cols))
-             if indices:
-                 # Convert list of indices to slice-like behavior if needed by consumer
-                 # Or simply return the list of indices per column
-                 # Returning list of indices is more flexible
-                 # slices.append(indices)
-                 # Sticking to slice for now, assuming consumer wants slices (might be less intuitive for row-first)
-                 # This slice logic for row-first might not be what's expected.
-                 # A simpler approach might be to just return lists of indices per column.
-                 # Let's try returning lists of indices instead.
-                 slices.append(indices)
-
-        # The original slice logic for rows_first was complex and potentially incorrect.
-        # Returning lists of indices is clearer for column generation.
-        # If the consumer *requires* slices, the logic needs careful review.
-        # For now, adjusting the layout method to handle lists of indices.
-        return slices # Now returns lists of indices, not slices
+        filling columns first"""
+        if n_inputs < n_cols:
+            slices = [slice(i, i + 1, 1) for i in range(n_inputs)]
+        else:
+            slices = [
+                slice(i, 1 + i + (ceil(n_inputs / n_cols) - 1) * n_cols, n_cols)
+                if i + n_cols * (ceil(n_inputs / n_cols) - 1) < n_inputs
+                else slice(i, 1 + i + (int(n_inputs / n_cols) - 1) * n_cols, n_cols)
+                for i in range(n_cols)
+            ]
+        return slices
 
     def layout(self):
-        # Generate columns based on lists of indices
         if self.fill_row_first:
-            cols_indices = self.get_slices_rows_first(len(self._feature_inputs), self.n_input_cols)
-            input_row = dbc.Row(
-                [
-                    dbc.Col([self._feature_inputs[i] for i in indices])
-                    for indices in cols_indices if indices # Ensure list is not empty
-                ]
-            )
-        else: # Fill columns first
-            cols_slices = self.get_slices_cols_first(len(self._feature_inputs), self.n_input_cols)
             input_row = dbc.Row(
                 [
                     dbc.Col(self._feature_inputs[slicer])
-                    for slicer in cols_slices
+                    for slicer in self.get_slices_rows_first(
+                        len(self._feature_inputs), self.n_input_cols
+                    )
                 ]
             )
-
+        else:
+            input_row = dbc.Row(
+                [
+                    dbc.Col(self._feature_inputs[slicer])
+                    for slicer in self.get_slices_cols_first(
+                        len(self._feature_inputs), self.n_input_cols
+                    )
+                ]
+            )
         return dbc.Card(
             [
                 make_hideable(
@@ -1483,17 +1294,17 @@ class FeatureInputComponent(ExplainerComponent):
                             html.Div(
                                 [
                                     html.H3(
-                                        self.title, # uses translated title
+                                        self.title,
                                         id="feature-input-title-" + self.name,
                                     ),
                                     make_hideable(
                                         html.H6(
-                                            self.subtitle, className="card-subtitle" # uses translated subtitle
+                                            self.subtitle, className="card-subtitle"
                                         ),
                                         hide=self.hide_subtitle,
                                     ),
                                     dbc.Tooltip(
-                                        self.description, # uses translated description
+                                        self.description,
                                         target="feature-input-title-" + self.name,
                                     ),
                                 ]
@@ -1512,7 +1323,7 @@ class FeatureInputComponent(ExplainerComponent):
                                 ),
                             ]
                         ),
-                        input_row, # Use the generated row of inputs
+                        input_row,
                     ]
                 ),
             ],
@@ -1521,55 +1332,43 @@ class FeatureInputComponent(ExplainerComponent):
 
     def to_html(self, state_dict=None, add_header=True):
         args = self.get_state_args(state_dict)
-        index_val = args.get('index', 'Nenhum') # Translated default/fallback
-        # Generate static HTML representation of inputs
         html_inputs = [
-            to_html.input(feature, args.get(feature, "N/A"), disabled=True) # Use N/A if value missing
+            to_html.input(feature, args.get(feature, None), disabled=True)
             for feature in self._input_features
         ]
-        html_content = to_html.hide(f"Selecionado: <b>{index_val}</b>", hide=self.hide_index) # Uses translated text
-
-        # Generate rows based on lists of indices/slices
+        html = to_html.hide(f"Selected: <b>{args['index']}</b>", hide=self.hide_index)
         if self.fill_row_first:
-            cols_indices = self.get_slices_rows_first(len(html_inputs), self.n_input_cols)
-            html_content += to_html.row(
-                *[
-                    "".join([html_inputs[i] for i in indices])
-                    for indices in cols_indices if indices
-                ]
-            )
-        else: # Fill columns first
-            cols_slices = self.get_slices_cols_first(len(html_inputs), self.n_input_cols)
-            html_content += to_html.row(
+            html += to_html.row(
                 *[
                     "".join(html_inputs[slicer])
-                    for slicer in cols_slices
+                    for slicer in self.get_slices_rows_first(
+                        len(self._input_features), self.n_input_cols
+                    )
+                ]
+            )
+        else:
+            html += to_html.row(
+                *[
+                    "".join(html_inputs[slicer])
+                    for slicer in self.get_slices_cols_first(
+                        len(self._input_features), self.n_input_cols
+                    )
                 ]
             )
 
-        html = to_html.card(html_content, title=self.title, subtitle=self.subtitle) # uses translated title/subtitle
+        html = to_html.card(html, title=self.title, subtitle=self.subtitle)
         if add_header:
             return to_html.add_header(html)
         return html
 
     def component_callbacks(self, app):
         @app.callback(
-            [*self._feature_callback_outputs],
-            [Input(self.index_name, "value")],
-             # prevent_initial_call=True # Usually desired for index changes
+            [*self._feature_callback_outputs], [Input(self.index_name, "value")]
         )
         def update_whatif_inputs(index):
             if index is None or not self.explainer.index_exists(index):
-                # What to return if index is invalid? Empty strings? Current values?
-                # Returning current values via PreventUpdate is safest unless reset is desired.
                 raise PreventUpdate
-
-            try:
-                 # Get the row corresponding to the index, ordered by the feature list used for inputs
-                X_row = self.explainer.get_X_row(index, merge=True)[self._input_features]
-                # Return the values in the correct order; handle potential type issues (e.g., ensure correct types for dropdowns/inputs)
-                # This might need more sophisticated type conversion depending on _generate_dash_input logic
-                return X_row.values[0].tolist()
-            except Exception as e:
-                print(f"Error updating feature inputs for index {index}: {e}")
-                raise PreventUpdate # Prevent update on error
+            X_row = self.explainer.get_X_row(index, merge=True)[
+                self.explainer.columns_ranked_by_shap()
+            ]
+            return X_row.values[0].tolist()
