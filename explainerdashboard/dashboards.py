@@ -310,7 +310,7 @@ class ExplainerPageLayout(ExplainerComponent):
         self,
         explainer,
         component,
-        title="Explicação do Modelo", # Ajustado capitalização
+        title=None,#"Explicação do Modelo", # Ajustado capitalização
         name=None,
         description=None,
         header_hide_title=False,
@@ -504,7 +504,7 @@ class ExplainerDashboard:
         self,
         explainer: BaseExplainer = None,
         tabs: Union[ExplainerComponent, List[ExplainerComponent]] = None,
-        title: str = "Explicação do Modelo", # Ajustado capitalização
+        title: str = None, #"Explicação do Modelo", # Ajustado capitalização
         name: str = None,
         description: str = None,
         simple=False,
